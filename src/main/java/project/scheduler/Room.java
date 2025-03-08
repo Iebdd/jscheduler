@@ -1,5 +1,7 @@
 package project.scheduler;
 
+import java.time.LocalTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -7,18 +9,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 
-@Entity(name="User") // This tells Hibernate to make a table out of this class
-public class User {
-
+@Entity(name="Room")
+public class Room {
+   
   @Id
   @GeneratedValue(strategy=GenerationType.AUTO)
-  @OneToOne()
-  @PrimaryKeyJoinColumn(name="user_id")
+  @OneToOne
+  @PrimaryKeyJoinColumn(name="room_id")
   private Integer id;
-
-  private Integer role;
-
+  private final LocalTime start = LocalTime.of(7, 0, 0, 0);
+  private final LocalTime end = LocalTime.of(20, 0, 0, 0);
   private String name;
+
 
   public Integer getId() {
     return id;
@@ -36,11 +38,11 @@ public class User {
     this.name = name;
   }
 
-  public void setRole(Integer role) {
-    this.role = role;
+  public LocalTime getStart() {
+    return start;
   }
 
-  public Integer getRole() {
-    return role;
-  }
+  public LocalTime getEnd() {
+    return end;
+  } 
 }
