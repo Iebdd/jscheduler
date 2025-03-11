@@ -1,28 +1,43 @@
 package project.scheduler;
 
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 
+@Entity(name = "UserCourse")
 public class UserCourse {
 
-  @OneToOne(mappedBy="user_id")
-  private User user_id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Integer id;  // Unique identifier for the join table entry
 
-  @OneToOne(mappedBy="ucourse_id")
-  private Course ucourse_id;
+  @ManyToOne  // Many UserCourses can correspond to one User
+  @JoinColumn(name = "user_id", referencedColumnName = "id")  // Foreign key to User
+  private User user;
 
-  public User getUserId() {
-    return user_id;
+  @ManyToOne  // Many UserCourses can correspond to one Course
+  @JoinColumn(name = "ucourse_id", referencedColumnName = "id")  // Foreign key to Course
+  private Course course;
+
+  public Integer getId() {
+    return id;
   }
 
-  public void setUserId(User user_id) {
-    this.user_id = user_id;
+  public void setId(Integer id) {
+    this.id = id;
   }
 
-  public void setCourseId(Course ucourse_id) {
-    this.ucourse_id = ucourse_id;
+  public User getUser() {
+    return user;
   }
 
-  public Course getCourseId() {
-    return ucourse_id;
+  public void setUser(User user) {
+    this.user = user;
+  }
+
+  public Course getCourse() {
+    return course;
+  }
+
+  public void setCourse(Course course) {
+    this.course = course;
   }
 }

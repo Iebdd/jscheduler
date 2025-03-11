@@ -1,28 +1,45 @@
 package project.scheduler;
 
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
+@Entity(name = "RoomCourse") 
 public class RoomCourse {
 
-  @OneToOne(mappedBy="room_id")
-  private User room_id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id; // Unique ID for RoomCourse
 
-  @OneToOne(mappedBy="rcourse_id")
-  private Course course_id;
+    @ManyToOne
+    @JoinColumn(name = "room_id", referencedColumnName = "id") // Foreign key reference to Room
+    private Room room;
 
-  public User getUserId() {
-    return room_id;
-  }
+    @ManyToOne
+    @JoinColumn(name = "course_id", referencedColumnName = "id") // Foreign key reference to Course
+    private Course course;
 
-  public void setUserId(User user_id) {
-    this.room_id = user_id;
-  }
+    // Getters and Setters
+    public Integer getId() {
+        return id;
+    }
 
-  public void setCourseId(Course course_id) {
-    this.course_id = course_id;
-  }
+    public Room getRoom() {
+        return room;
+    }
 
-  public Course getCourseId() {
-    return course_id;
-  }
+    public void setRoom(Room room) {
+        this.room = room;
+    }
+
+    public Course getCourse() {
+        return course;
+    }
+
+    public void setCourse(Course course) {
+        this.course = course;
+    }
 }

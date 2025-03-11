@@ -7,20 +7,20 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrimaryKeyJoinColumn;
 
 @Entity(name="Room")
 public class Room {
    
   @Id
   @GeneratedValue(strategy=GenerationType.AUTO)
-  @OneToOne
-  @PrimaryKeyJoinColumn(name="room_id")
+
   private Integer id;
   private final LocalTime start = LocalTime.of(7, 0, 0, 0);
   private final LocalTime end = LocalTime.of(20, 0, 0, 0);
   private String name;
 
+  @OneToOne(mappedBy = "room")
+  private RoomCourse roomCourse; // Correct way to establish a relationship
 
   public Integer getId() {
     return id;

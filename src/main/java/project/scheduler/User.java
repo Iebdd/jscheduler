@@ -1,25 +1,34 @@
 package project.scheduler;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.Table;
 
-@Entity(name="User") // This tells Hibernate to make a table out of this class
+@Entity()
+@Table(name="users")
 public class User {
 
   @Id
-  @GeneratedValue(strategy=GenerationType.AUTO)
-  @OneToOne()
-  @PrimaryKeyJoinColumn(name="user_id")
+  @GeneratedValue(strategy = GenerationType.AUTO)
   private Integer id;
 
+  @Column(nullable = false)  // Ensure 'role' is not null in the database
   private Integer role;
 
+  @Column(nullable = false)  // Ensure 'name' is not null in the database
   private String name;
 
+  @OneToOne(mappedBy = "user")
+  private UserCourse userCourse;
+
+  // Default constructor
+  public User() {}
+
+  // Getters and setters
   public Integer getId() {
     return id;
   }
