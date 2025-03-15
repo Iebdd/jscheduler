@@ -1,11 +1,18 @@
 package project.scheduler;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity()
@@ -22,19 +29,39 @@ public class User {
   @Column(nullable = false)  // Ensure 'name' is not null in the database
   private String name;
 
-  @OneToOne(mappedBy = "user")
-  private UserCourse userCourse;
+  @Column(nullable = false)
+  private String password;
+
+  @Column(nullable = false)
+  private String salt;
+
+  @Column(nullable = false, unique=true)
+  private String email;
+
+  
+  @ManyToMany //(mappedBy = "user")
+  @SuppressWarnings("unused")
+  private final Set<Course> course = new HashSet<>();
+
+  @OneToMany(mappedBy="user", cascade=CascadeType.ALL)
+  @SuppressWarnings("unused")
+  private final List<Token> token = new ArrayList<>();
+
 
   // Default constructor
   public User() {}
 
+  public User(Integer role, String name, String password, String salt, String email) {
+    this.role = role;
+    this.name = name;
+    this.password = password;
+    this.salt = salt;
+    this.email = email;
+  }
+
   // Getters and setters
   public Integer getId() {
     return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
   }
 
   public String getName() {
@@ -51,5 +78,29 @@ public class User {
 
   public Integer getRole() {
     return role;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public void setSalt(String salt) {
+    this.salt = salt;
+  }
+
+  public String getSalt() {
+    return salt;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public String getEmail() {
+    return email;
   }
 }

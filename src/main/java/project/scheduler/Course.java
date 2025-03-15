@@ -1,10 +1,14 @@
 package project.scheduler;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 
 @Entity(name="Course")
 public class Course {
@@ -15,11 +19,14 @@ public class Course {
 
     private String name;
 
-    @OneToOne(mappedBy = "course")  // Match property in UserCourse
-    private UserCourse userCourse; // Relationship with UserCourse
+    @ManyToMany //(mappedBy = "course")  // Match property in UserCourse
+    private Set<User> user = new HashSet<>(); // Relationship with UserCourse
 
-    @OneToOne(mappedBy = "course")  // Match property in RoomCourse
-    private RoomCourse roomCourse; // Relationship with RoomCourse
+    @OneToMany(mappedBy = "course")
+    private Set<RoomCourse> roomCourse = new HashSet<>();
+
+/*     @ManyToMany(mappedBy = "course")  // Match property in RoomCourse
+    private RoomCourse roomCourse; // Relationship with RoomCourse */
 
     // Default constructor
     public Course() {}
