@@ -29,18 +29,18 @@ public class TokenController {
     // @RequestParam means it is a parameter from the GET or POST request
     User u = userRepository.findById(userId).orElse(null);
     if(u == null) {
-        return "User ID not found";
+        return String.format("User ID not found%n");
     }
     Token t = new Token(u , token);
     tokenRepository.save(t);
-    return String.format("Added token: %s for user %d", token, userId);
+    return String.format("Added token: %s for user %d%n", token, userId);
   }
 
-  @PostMapping(path="/clean")
+  @GetMapping(path="/clean")
   public @ResponseBody String deleteExpired() {
     Integer[] count = tokenRepository.findExpired(Instant.now());
     tokenRepository.deleteByIdIn(count);
-    return String.format("Deleted %d expired entries", count.length);
+    return String.format("Deleted %d expired entries%n", count.length);
   }
 
   @GetMapping(path="/verify/{userId}/{token}")
