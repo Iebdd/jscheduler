@@ -1,4 +1,4 @@
-package project.scheduler;
+package project.scheduler.Tables;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,11 +19,13 @@ public class Course {
 
     private String name;
 
+    @SuppressWarnings("unused")
     @ManyToMany //(mappedBy = "course")  // Match property in UserCourse
-    private Set<User> user = new HashSet<>(); // Relationship with UserCourse
+    private final Set<User> user = new HashSet<>(); // Relationship with UserCourse
 
+    @SuppressWarnings("unused")
     @OneToMany(mappedBy = "course")
-    private Set<RoomCourse> roomCourse = new HashSet<>();
+    private final Set<RoomCourse> roomCourse = new HashSet<>();
 
 /*     @ManyToMany(mappedBy = "course")  // Match property in RoomCourse
     private RoomCourse roomCourse; // Relationship with RoomCourse */
@@ -31,13 +33,13 @@ public class Course {
     // Default constructor
     public Course() {}
 
+    public Course(String name) {
+        this.name = name;
+    }
+
     // Getters and setters
     public Integer getId() {
         return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public void setName(String name) {

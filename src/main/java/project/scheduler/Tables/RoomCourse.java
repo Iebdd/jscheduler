@@ -1,4 +1,4 @@
-package project.scheduler;
+package project.scheduler.Tables;
 
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -9,7 +9,7 @@ import jakarta.persistence.MapsId;
 public class RoomCourse {
 
     @EmbeddedId
-    private RoomCourseId id = new RoomCourseId(); // Unique ID for RoomCourse
+    private final RoomCourseId id = new RoomCourseId(); // Unique ID for RoomCourse
 
     @ManyToOne
     //@JoinColumn(name = "room_id", referencedColumnName = "id") // Foreign key reference to Room

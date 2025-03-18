@@ -1,4 +1,4 @@
-package project.scheduler;
+package project.scheduler.Tables;
 
 import java.time.LocalTime;
 import java.util.HashSet;
@@ -21,7 +21,8 @@ public class Room {
   private String name;
 
   @OneToMany(mappedBy = "room")
-  private Set<RoomCourse> roomCourse = new HashSet<>();
+  @SuppressWarnings("unused")
+  private final Set<RoomCourse> roomCourse = new HashSet<>();
 
   public Integer getId() {
     return id;

@@ -1,4 +1,4 @@
-package project.scheduler;
+package project.scheduler.Tables;
 
 import jakarta.persistence.Embeddable;
 

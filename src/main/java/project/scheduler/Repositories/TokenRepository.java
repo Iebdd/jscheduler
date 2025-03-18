@@ -1,4 +1,4 @@
-package project.scheduler;
+package project.scheduler.Repositories;
 
 import java.time.Instant;
 
@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.NativeQuery;
 import org.springframework.data.repository.CrudRepository;
 
 import jakarta.transaction.Transactional;
+import project.scheduler.Tables.Token;
+import project.scheduler.Tables.User;
 
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called tokenRepository

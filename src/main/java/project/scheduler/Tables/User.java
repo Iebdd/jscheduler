@@ -1,4 +1,4 @@
-package project.scheduler;
+package project.scheduler.Tables;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -32,9 +32,6 @@ public class User {
   @Column(nullable = false)
   private String password;
 
-  @Column(nullable = false)
-  private String salt;
-
   @Column(nullable = false, unique=true)
   private String email;
 
@@ -51,11 +48,10 @@ public class User {
   // Default constructor
   public User() {}
 
-  public User(Integer role, String name, String password, String salt, String email) {
+  public User(Integer role, String name, String password, String email) {
     this.role = role;
     this.name = name;
     this.password = password;
-    this.salt = salt;
     this.email = email;
   }
 
@@ -86,14 +82,6 @@ public class User {
 
   public String getPassword() {
     return password;
-  }
-
-  public void setSalt(String salt) {
-    this.salt = salt;
-  }
-
-  public String getSalt() {
-    return salt;
   }
 
   public void setEmail(String email) {
