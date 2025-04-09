@@ -20,12 +20,12 @@ public class Course {
     private String name;
 
     @SuppressWarnings("unused")
-    @ManyToMany //(mappedBy = "course")  // Match property in UserCourse
+    @ManyToMany(mappedBy = "course")  // Match property in UserCourse
     private final Set<User> user = new HashSet<>(); // Relationship with UserCourse
 
     @SuppressWarnings("unused")
     @OneToMany(mappedBy = "course")
-    private final Set<RoomCourse> roomCourse = new HashSet<>();
+    private final Set<Bookings> roomCourse = new HashSet<>();
 
 /*     @ManyToMany(mappedBy = "course")  // Match property in RoomCourse
     private RoomCourse roomCourse; // Relationship with RoomCourse */

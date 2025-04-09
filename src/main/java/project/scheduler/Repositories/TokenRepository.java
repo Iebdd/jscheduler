@@ -8,7 +8,6 @@ import org.springframework.data.repository.CrudRepository;
 
 import jakarta.transaction.Transactional;
 import project.scheduler.Tables.Token;
-import project.scheduler.Tables.User;
 
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called tokenRepository
@@ -17,11 +16,12 @@ import project.scheduler.Tables.User;
 @Transactional
 public interface TokenRepository extends CrudRepository<Token, Integer> {
 
-    @NativeQuery(value = "SELECT * FROM tokens WHERE user_id= ?1")
-    User[] findByForeignKey(Integer user_id);
+    @NativeQuery(value = "SELECT token FROM tokens WHERE user_id= ?1")
+    String[] findTokenByUser(Integer user_id);
 
-    @NativeQuery(value = "SELECT id FROM tokens WHERE expiry < ?1")
-    Integer[] findExpired(Instant now);
+    @Modifying
+    @NativeQuery(value = "DELETE FROM tokens t WHERE t.expiry < ?1")
+    void deleteExpired(Instant now);
 
     @NativeQuery(value = "SELECT id > 0 FROM tokens t WHERE t.user_id = ?1 AND t.token = ?2 AND t.expiry > ?3")
     Integer findToken(Integer user_id, String token, Instant now);

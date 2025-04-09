@@ -22,7 +22,7 @@ public class Room {
 
   @OneToMany(mappedBy = "room")
   @SuppressWarnings("unused")
-  private final Set<RoomCourse> roomCourse = new HashSet<>();
+  private final Set<Bookings> roomCourse = new HashSet<>();
 
   public Integer getId() {
     return id;

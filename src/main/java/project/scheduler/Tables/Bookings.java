@@ -2,27 +2,28 @@ package project.scheduler.Tables;
 
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
 
-@Entity(name = "RoomCourse") 
-public class RoomCourse {
+@Entity(name = "Bookings") 
+public class Bookings {
 
     @EmbeddedId
-    private final RoomCourseId id = new RoomCourseId(); // Unique ID for RoomCourse
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
 
     @ManyToOne
-    //@JoinColumn(name = "room_id", referencedColumnName = "id") // Foreign key reference to Room
-    @MapsId("roomId")
+    @JoinColumn(name = "room_id", referencedColumnName = "id") // Foreign key reference to Room
     private Room room;
 
     @ManyToOne
-    //@JoinColumn(name = "course_id", referencedColumnName = "id") // Foreign key reference to Course
-    @MapsId("courseId")
+    @JoinColumn(name = "course_id", referencedColumnName = "id") // Foreign key reference to Course
     private Course course;
 
     // Getters and Setters
-    public RoomCourseId getId() {
+    public Integer getId() {
         return id;
     }
 

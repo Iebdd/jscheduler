@@ -13,15 +13,11 @@ public class Password {
         this.password = BCrypt.hashpw(new_password, BCrypt.gensalt());
     }
 
-    public Password(String new_password, Boolean check) {
-        this.password = new_password;
-    }
-
     public String getPassword() {
         return this.password;
     }
 
-    public Boolean compare(String new_password) {
-        return BCrypt.checkpw(new_password, this.password);
+    public static boolean compare(String new_password, String old_password) {
+        return BCrypt.checkpw(new_password, old_password);
     }
 }
