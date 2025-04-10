@@ -12,19 +12,19 @@ public class Bookings {
 
     @EmbeddedId
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private Integer bookings_id;
 
     @ManyToOne
-    @JoinColumn(name = "room_id", referencedColumnName = "id") // Foreign key reference to Room
+    @JoinColumn(name = "room_id", referencedColumnName = "room_id") // Foreign key reference to Room
     private Room room;
 
     @ManyToOne
-    @JoinColumn(name = "course_id", referencedColumnName = "id") // Foreign key reference to Course
+    @JoinColumn(name = "course_id", referencedColumnName = "course_id") // Foreign key reference to Course
     private Course course;
 
     // Getters and Setters
     public Integer getId() {
-        return id;
+        return bookings_id;
     }
 
     public Room getRoom() {

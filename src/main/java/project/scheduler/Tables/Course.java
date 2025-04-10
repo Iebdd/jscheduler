@@ -15,7 +15,7 @@ public class Course {
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private Integer id;
+    private Integer course_id;
 
     private String name;
 
@@ -39,7 +39,7 @@ public class Course {
 
     // Getters and setters
     public Integer getId() {
-        return id;
+        return course_id;
     }
 
     public void setName(String name) {

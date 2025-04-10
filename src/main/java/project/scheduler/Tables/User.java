@@ -16,12 +16,12 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity()
-@Table(name="users")
+@Table(name="User")
 public class User {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  private Integer id;
+  private Integer user_id;
 
   @Column(nullable = false)  // Ensure 'role' is not null in the database
   private Integer role;
@@ -57,7 +57,7 @@ public class User {
 
   // Getters and setters
   public Integer getId() {
-    return id;
+    return user_id;
   }
 
   public String getName() {

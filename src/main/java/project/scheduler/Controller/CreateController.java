@@ -3,7 +3,6 @@ package project.scheduler.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -11,10 +10,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import jakarta.inject.Inject;
 import project.scheduler.Repositories.CourseRepository;
 import project.scheduler.Repositories.TokenRepository;
+import project.scheduler.Repositories.UserCourseRepository;
 import project.scheduler.Repositories.UserRepository;
 import project.scheduler.Tables.Course;
 import project.scheduler.Tables.Token;
 import project.scheduler.Tables.User;
+import project.scheduler.Tables.UserCourse;
 import project.scheduler.Util.Password;
 
 
@@ -27,7 +28,10 @@ public class CreateController {
   private CourseRepository courseRepository;
   /*
   private RoomRepository roomRepository;
+  */
+  @Inject
   private UserCourseRepository userCourseRepository;
+  /*
   private RoomCourseRepository roomCourseRepository; */
   @Inject
   private TokenRepository tokenRepository;
@@ -59,9 +63,10 @@ public class CreateController {
   }
 
   @PostMapping(path="/student")
-  public String inscribeStudent(@RequestBody Integer user_id, @RequestBody Integer course_id) {
-      //TODO: process POST request
-      
+  public @ResponseBody String inscribeStudent(@RequestParam Integer user_id, @RequestParam Integer course_id) {
+    UserCourse uc = new UserCourse(userRepository.findById(user_id).orElse(null), 
+                                    courseRepository.findById(course_id).orElse(null));
+      userCourseRepository.save(uc);
       return String.format("Inscribed user: %d into course %d", user_id, course_id);
   }
 }

@@ -42,7 +42,7 @@ public class VerifyController {
     boolean pw_match = Password.compare(password, user.getPassword());
     String[] tokens;
     if(pw_match) {
-      tokenRepository.deleteExpired(Instant.now());
+      tokenRepository.deleteExpired(Instant.now()); 
       tokens = tokenRepository.findTokenByUser(user.getId());
       if(tokens.length == 0) {
         RandomStringUtils tok_gen = RandomStringUtils.secure();
@@ -52,6 +52,11 @@ public class VerifyController {
       }
       tokenRepository.refreshToken(Instant.now().plusSeconds(604800), user.getId());
       return new SingleToken(tokens, true);
+    }
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
     }
     return null;
   }

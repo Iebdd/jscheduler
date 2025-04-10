@@ -15,7 +15,7 @@ public class Room {
    
   @Id
   @GeneratedValue(strategy=GenerationType.AUTO)
-  private Integer id;
+  private Integer room_id;
   private final LocalTime start = LocalTime.of(7, 0, 0, 0);
   private final LocalTime end = LocalTime.of(20, 0, 0, 0);
   private String name;
@@ -25,11 +25,11 @@ public class Room {
   private final Set<Bookings> roomCourse = new HashSet<>();
 
   public Integer getId() {
-    return id;
+    return room_id;
   }
 
   public void setId(Integer id) {
-    this.id = id;
+    this.room_id = id;
   }
 
   public String getName() {
