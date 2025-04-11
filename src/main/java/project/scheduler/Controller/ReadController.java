@@ -1,10 +1,10 @@
 package project.scheduler.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.inject.Inject;
 import project.scheduler.Repositories.CourseRepository;
@@ -16,7 +16,7 @@ import project.scheduler.Tables.User;
 
 
 
-@Controller
+@RestController
 @RequestMapping(path="/read")
 public class ReadController {
   @Autowired
@@ -31,18 +31,18 @@ public class ReadController {
   private TokenRepository tokenRepository;
 
   @GetMapping(path="/users")
-  public @ResponseBody Iterable<User> getAllUsers() {
-    return userRepository.findAll();
+  public ResponseEntity<Iterable<User>> getAllUsers() {
+    return ResponseEntity.ok(userRepository.findAll());
   }
   
 
   @GetMapping(path="/tokens")
-  public @ResponseBody Iterable<Token> getAllTokens() {
-    return tokenRepository.findAll();
+  public ResponseEntity<Iterable<Token>> getAllTokens() {
+    return ResponseEntity.ok(tokenRepository.findAll());
   }
 
   @GetMapping(path="/courses")
-  public @ResponseBody Iterable<Course> getAllCourses() {
-    return courseRepository.findAll();
+  public ResponseEntity<Iterable<Course>> getAllCourses() {
+    return ResponseEntity.ok(courseRepository.findAll());
   }
 }

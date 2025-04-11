@@ -11,7 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 
 @Entity(name="Room")
-public class Room {
+public class Room { 
    
   @Id
   @GeneratedValue(strategy=GenerationType.AUTO)

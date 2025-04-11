@@ -11,6 +11,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -23,10 +25,10 @@ public class User {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Integer user_id;
 
-  @Column(nullable = false)  // Ensure 'role' is not null in the database
+  @Column(nullable = false)
   private Integer role;
 
-  @Column(nullable = false)  // Ensure 'name' is not null in the database
+  @Column(nullable = false)
   private String name;
 
   @Column(nullable = false)
@@ -36,7 +38,12 @@ public class User {
   private String email;
 
   
-  @ManyToMany //(mappedBy = "user")
+  @ManyToMany(cascade = {CascadeType.ALL})
+  @JoinTable(
+    name = "Inscription",
+    joinColumns = {@JoinColumn(name = "user_id")},
+    inverseJoinColumns = {@JoinColumn(name = "course_id")}
+  )
   @SuppressWarnings("unused")
   private final Set<Course> course = new HashSet<>();
 
@@ -55,7 +62,6 @@ public class User {
     this.email = email;
   }
 
-  // Getters and setters
   public Integer getId() {
     return user_id;
   }
