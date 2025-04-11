@@ -5,6 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,6 +26,7 @@ public class User {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
+  @JsonProperty(index = 1)
   private Integer user_id;
 
   @Column(nullable = false)
@@ -41,8 +45,8 @@ public class User {
   @ManyToMany(cascade = {CascadeType.ALL})
   @JoinTable(
     name = "Inscription",
-    joinColumns = {@JoinColumn(name = "user_id")},
-    inverseJoinColumns = {@JoinColumn(name = "course_id")}
+    joinColumns = {@JoinColumn(name = "i_user_id")},
+    inverseJoinColumns = {@JoinColumn(name = "i_course_id")}
   )
   @SuppressWarnings("unused")
   private final Set<Course> course = new HashSet<>();
@@ -62,8 +66,9 @@ public class User {
     this.email = email;
   }
 
-  public Integer getId() {
-    return user_id;
+  @JsonIgnore
+  public Integer getUserId() {
+    return this.user_id;
   }
 
   public String getName() {

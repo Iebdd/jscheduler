@@ -16,19 +16,14 @@ import project.scheduler.Tables.Token;
 @Transactional
 public interface TokenRepository extends CrudRepository<Token, Integer> {
 
-    @NativeQuery(value = "SELECT token FROM tokens WHERE user_id= ?1")
+    @NativeQuery(value = "SELECT token FROM tokens WHERE t_user_id= ?1")
     String[] findTokenByUser(Integer user_id);
 
     @Modifying
     @NativeQuery(value = "DELETE FROM tokens t WHERE t.expiry < ?1")
     void deleteExpired(Instant now);
 
-    @NativeQuery(value = "SELECT id > 0 FROM tokens t WHERE t.user_id = ?1 AND t.token = ?2 AND t.expiry > ?3")
-    Integer findToken(Integer user_id, String token, Instant now);
-
     @Modifying
     @NativeQuery(value = "UPDATE tokens SET expiry = ?1 WHERE id = ?2")
     Integer refreshToken(Instant newExpiry, Integer id);
-
-    void deleteByIdIn(Integer[] ids);
 }

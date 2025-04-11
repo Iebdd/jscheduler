@@ -1,5 +1,8 @@
 package project.scheduler.Tables;
 
+import java.time.Duration;
+import java.time.Instant;
+
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,14 +18,29 @@ public class Bookings {
     private Integer bookings_id;
 
     @ManyToOne
-    @JoinColumn(name = "room_id", referencedColumnName = "room_id") // Foreign key reference to Room
+    @JoinColumn(name = "b_room_id", referencedColumnName = "room_id") // Foreign key reference to Room
     private Room room;
 
     @ManyToOne
-    @JoinColumn(name = "course_id", referencedColumnName = "course_id") // Foreign key reference to Course
+    @JoinColumn(name = "b_course_id", referencedColumnName = "course_id") // Foreign key reference to Course
     private Course course;
 
-    // Getters and Setters
+    private Instant start;
+    private Instant end;
+    private Duration length;
+
+    public void setStart(Instant start) {
+        this.start = start;
+    }
+
+    public void setEnd(Instant end) {
+        this.end = end;
+    }
+
+    public void setLength(Duration length) {
+        this.length = length;
+    }
+
     public Integer getId() {
         return bookings_id;
     }
@@ -41,5 +59,17 @@ public class Bookings {
 
     public void setCourse(Course course) {
         this.course = course;
+    }
+
+    public Instant getStart() {
+        return start;
+    }
+
+    public Instant getEnd() {
+        return end;
+    }
+
+    public Duration getLength() {
+        return length;
     }
 }

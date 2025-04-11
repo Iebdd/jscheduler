@@ -10,11 +10,11 @@ import jakarta.persistence.ManyToOne;
 public class InscriptionId implements Serializable {
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    @JoinColumn(name = "i_user_id", referencedColumnName = "user_id")
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "course_id", referencedColumnName = "course_id")
+    @JoinColumn(name = "i_course_id", referencedColumnName = "course_id")
     private Course course;
 
     public InscriptionId() {};

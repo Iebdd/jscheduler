@@ -28,7 +28,7 @@ public class Token {
   
   @SuppressWarnings("unused")
   @ManyToOne
-  @JoinColumn(nullable = false, name="user_id")
+  @JoinColumn(nullable = false, name="t_user_id")
   private User user;
 
   public Token() {}

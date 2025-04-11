@@ -24,6 +24,12 @@ public class Room {
   @SuppressWarnings("unused")
   private final Set<Bookings> roomCourse = new HashSet<>();
 
+  public Room() {}
+
+  public Room(String name) {
+    this.name = name;
+  }
+
   public Integer getId() {
     return room_id;
   }
