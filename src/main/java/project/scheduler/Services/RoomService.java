@@ -3,11 +3,13 @@ package project.scheduler.Services;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 import jakarta.inject.Inject;
 import project.scheduler.Repositories.RoomRepository;
 import project.scheduler.Tables.Room;
 
+@Service
 public class RoomService {
     @Inject
     private RoomRepository roomRepository;
