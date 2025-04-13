@@ -1,5 +1,7 @@
 package project.scheduler.Repositories;
 
+import java.util.UUID;
+
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.NativeQuery;
 import org.springframework.data.repository.CrudRepository;
@@ -12,10 +14,10 @@ import project.scheduler.Tables.InscriptionId;
 public interface InscriptionRepository extends CrudRepository<Inscription, InscriptionId> {
 
     @NativeQuery(value = "SELECT EXISTS (SELECT 1 FROM inscription i WHERE i.i_user_id = ?1 AND i.i_course_id = ?2)")
-    long ifExists(int user_id, int course_id);
+    long ifExists(UUID user_id, UUID course_id);
 
     @Modifying
     @NativeQuery(value = "DELETE FROM inscription i WHERE i.i_user_id = ?1 AND i.i_course_id = ?2")
-    Integer deleteByIds(int user_id, int course_id);
+    Integer deleteByIds(UUID user_id, UUID course_id);
 
 }

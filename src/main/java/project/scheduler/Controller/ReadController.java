@@ -10,7 +10,9 @@ import jakarta.inject.Inject;
 import project.scheduler.Repositories.CourseRepository;
 import project.scheduler.Repositories.TokenRepository;
 import project.scheduler.Repositories.UserRepository;
+import project.scheduler.Services.RoomService;
 import project.scheduler.Tables.Course;
+import project.scheduler.Tables.Room;
 import project.scheduler.Tables.Token;
 import project.scheduler.Tables.User;
 
@@ -28,7 +30,14 @@ public class ReadController {
   private UserCourseRepository userCourseRepository;
   private RoomCourseRepository roomCourseRepository; */
   @Inject
+  private RoomService roomService;
+  @Inject
   private TokenRepository tokenRepository;
+
+  @GetMapping(path="/rooms")
+  public ResponseEntity<Room[]> getRooms() {
+    return roomService.getRooms();
+  }
 
   @GetMapping(path="/users")
   public ResponseEntity<Iterable<User>> getAllUsers() {
@@ -42,7 +51,7 @@ public class ReadController {
   }
 
   @GetMapping(path="/courses")
-  public ResponseEntity<Iterable<Course>> getAllCourses() {
-    return ResponseEntity.ok(courseRepository.findAll());
+  public ResponseEntity<Course[]> getAllCourses() {
+    return ResponseEntity.ok(courseRepository.getCourses());
   }
 }

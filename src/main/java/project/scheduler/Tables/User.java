@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -25,15 +26,18 @@ import jakarta.persistence.Table;
 public class User {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.UUID)
   @JsonProperty(index = 1)
-  private Integer user_id;
+  private UUID user_id;
 
   @Column(nullable = false)
   private Integer role;
 
   @Column(nullable = false)
-  private String name;
+  private String firstName;
+
+  @Column(nullable = false) 
+  private String lastName;
 
   @Column(nullable = false)
   private String password;
@@ -59,24 +63,33 @@ public class User {
   // Default constructor
   public User() {}
 
-  public User(Integer role, String name, String password, String email) {
+  public User(Integer role, String first_name, String last_name, String password, String email) {
     this.role = role;
-    this.name = name;
+    this.firstName = first_name;
+    this.lastName = last_name;
     this.password = password;
     this.email = email;
   }
 
   @JsonIgnore
-  public Integer getUserId() {
+  public UUID getUserId() {
     return this.user_id;
   }
 
-  public String getName() {
-    return name;
+  public String getFirstName() {
+    return this.firstName;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
+
+  public String getLastName() {
+    return this.lastName;
+  }
+
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
   }
 
   public void setRole(Integer role) {
@@ -84,7 +97,7 @@ public class User {
   }
 
   public Integer getRole() {
-    return role;
+    return this.role;
   }
 
   public void setPassword(String password) {
@@ -92,7 +105,7 @@ public class User {
   }
 
   public String getPassword() {
-    return password;
+    return this.password;
   }
 
   public void setEmail(String email) {
@@ -100,6 +113,6 @@ public class User {
   }
 
   public String getEmail() {
-    return email;
+    return this.email;
   }
 }

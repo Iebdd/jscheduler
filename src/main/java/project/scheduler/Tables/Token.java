@@ -1,6 +1,7 @@
 package project.scheduler.Tables;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,9 +17,9 @@ import jakarta.persistence.Table;
 public class Token {
    
   @Id
-  @GeneratedValue(strategy=GenerationType.AUTO)
+  @GeneratedValue(strategy=GenerationType.UUID)
   @Column(name="id")
-  private Integer id;
+  private UUID id;
 
   @Column(nullable = false)
   private String token;
@@ -45,12 +46,8 @@ public class Token {
     this.expiry = Instant.now().plusSeconds(604800); // Sets the expiry one week from now
   }
 
-  public Integer getId() {
+  public UUID getId() {
     return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
   }
 
   public String getToken() {

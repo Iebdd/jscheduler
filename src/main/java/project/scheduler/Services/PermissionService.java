@@ -1,6 +1,7 @@
 package project.scheduler.Services;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -38,45 +39,45 @@ public class PermissionService {
         }
     }
 
-    public boolean validRole(String token, Integer user_id, Permissions role) {
-        User active_user = userRepository.findUserByToken(token);
-        return !(!active_user.getUserId().equals(user_id) && active_user.getUserId() < role.getNum());
+    public boolean validRole(String token, UUID user_id, Permissions role) {         //Checks required permission and allows the role threshold
+        User active_user = userRepository.findUserByToken(token);                       //or if the user requesting the change is using the same id
+        return !(!active_user.getUserId().equals(user_id) && active_user.getRole() < role.getNum());
     }
 
-    public boolean validRole(String token, Permissions role) {
-        User active_user = userRepository.findUserByToken(token);
-        return !(active_user.getUserId() < role.getNum());
+    public boolean validRole(String token, Permissions role) {                          //Checks required permissions but only allowed the change
+        User active_user = userRepository.findUserByToken(token);                       //with the necessary permissions
+        return !(active_user.getRole() < role.getNum());
     }
 
     public boolean validPassword(String new_password, String old_password) {
         return Password.compare(new_password, old_password);
     }
 
-    public void setTokenDebug(User user_id, String token) {
-        Token t = new Token(user_id , token);
+    public void setTokenDebug(User user_id, String token) {                             //Allows to directly set a token for debug and demonstration
+        Token t = new Token(user_id , token);                                           //purposes DELETE FOR PROD!!
         tokenRepository.save(t);
     }
 
-    public ResponseEntity<Object> setToken(User user) {
-        UserToken new_token = new UserToken();
+    public ResponseEntity<UserToken> setToken(User user) {
+        UserToken new_token = new UserToken(user.getUserId());
         tokenRepository.save(new Token(user, new_token.getFirstToken(), Instant.now().plusSeconds(604800)));
         return ResponseEntity.ok(new_token);
     }
 
-    public ResponseEntity<Object> refreshToken(int user_id, String[] tokens) {
+    public ResponseEntity<UserToken> refreshToken(UUID user_id, String[] tokens) {
         tokenRepository.refreshToken(Instant.now().plusSeconds(604800), user_id);
-        return ResponseEntity.ok(new UserToken(tokens, true));
+        return ResponseEntity.ok(new UserToken(tokens, user_id, true));
     }
 
     public void cullTokens() {
         tokenRepository.deleteExpired(Instant.now()); 
     }
 
-    public String[] findTokenByUser(int user_id) {
+    public String[] findTokenByUser(UUID user_id) {
         return tokenRepository.findTokenByUser(user_id);
     }
 
-    public void setPassword(String new_password, int user_id) {
+    public void setPassword(String new_password, UUID user_id) {
         userRepository.updatePassword(new Password(new_password).getPassword(), user_id);
     }
 }

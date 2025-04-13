@@ -3,6 +3,7 @@ package project.scheduler.Tables;
 import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,8 +15,8 @@ import jakarta.persistence.OneToMany;
 public class Room { 
    
   @Id
-  @GeneratedValue(strategy=GenerationType.AUTO)
-  private Integer room_id;
+  @GeneratedValue(strategy=GenerationType.UUID)
+  private UUID room_id;
   private final LocalTime start = LocalTime.of(7, 0, 0, 0);
   private final LocalTime end = LocalTime.of(20, 0, 0, 0);
   private String name;
@@ -30,12 +31,8 @@ public class Room {
     this.name = name;
   }
 
-  public Integer getId() {
+  public UUID getId() {
     return room_id;
-  }
-
-  public void setId(Integer id) {
-    this.room_id = id;
   }
 
   public String getName() {

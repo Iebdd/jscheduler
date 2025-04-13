@@ -2,6 +2,7 @@ package project.scheduler.Tables;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,8 +15,8 @@ import jakarta.persistence.OneToMany;
 public class Course {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    private Integer course_id;
+    @GeneratedValue(strategy=GenerationType.UUID)
+    private UUID course_id;
 
     private String name;
 
@@ -38,7 +39,7 @@ public class Course {
     }
 
     // Getters and setters
-    public Integer getId() {
+    public UUID getId() {
         return course_id;
     }
 

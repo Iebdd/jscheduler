@@ -1,5 +1,7 @@
 package project.scheduler.Services;
 
+import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -16,16 +18,16 @@ public class InscriptionService {
     @Inject
     private InscriptionRepository inscriptionRepository;
 
-    public ResponseEntity<String> remove(int user_id, int course_id) {
+    public ResponseEntity<String> remove(UUID user_id, UUID course_id) {
         try {
             int rows = inscriptionRepository.deleteByIds(user_id, course_id);
             if(rows == 0) {
-              return new ResponseEntity<>(String.format("Could not remove User: %d from Course: %d", user_id, course_id), HttpStatus.INTERNAL_SERVER_ERROR);
+              return new ResponseEntity<>(String.format("Could not remove User: %s from Course: %s", user_id, course_id), HttpStatus.INTERNAL_SERVER_ERROR);
             } else {
-              return ResponseEntity.ok(String.format("Removed User: %d from Course: %d", user_id, course_id));
+              return ResponseEntity.ok(String.format("Removed User: %s from Course: %s", user_id, course_id));
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(String.format("Could not remove User: %d from Course: %d", user_id, course_id), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(String.format("Could not remove User: %s from Course: %s", user_id, course_id), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -33,7 +35,7 @@ public class InscriptionService {
         inscriptionRepository.save(new Inscription(user, course));
     }
 
-    public boolean ifExists(int user_id, int course_id) {
+    public boolean ifExists(UUID user_id, UUID course_id) {
         return inscriptionRepository.ifExists(user_id, course_id) == 1;
     }
     

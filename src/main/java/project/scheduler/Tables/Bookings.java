@@ -2,6 +2,7 @@ package project.scheduler.Tables;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.UUID;
 
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -14,8 +15,8 @@ import jakarta.persistence.ManyToOne;
 public class Bookings {
 
     @EmbeddedId
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer bookings_id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID bookings_id;
 
     @ManyToOne
     @JoinColumn(name = "b_room_id", referencedColumnName = "room_id") // Foreign key reference to Room
@@ -41,7 +42,7 @@ public class Bookings {
         this.length = length;
     }
 
-    public Integer getId() {
+    public UUID getId() {
         return bookings_id;
     }
 

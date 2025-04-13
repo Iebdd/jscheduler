@@ -1,6 +1,7 @@
 package project.scheduler.Services;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,11 +18,11 @@ public class CourseService {
 
     public ResponseEntity<String> create(String name) {
         Course c = new Course(name);
-        int id = courseRepository.save(c).getId();
-        return ResponseEntity.ok(String.format("Added Course '%s' with id: %d", name, id));
+        UUID id = courseRepository.save(c).getId();
+        return ResponseEntity.ok(String.format("Added Course '%s' with id: %s", name, id));
     }
 
-    public Optional<Course> findCourseById(int course_id) {
+    public Optional<Course> findCourseById(UUID course_id) {
         return courseRepository.findById(course_id);
     }
 }

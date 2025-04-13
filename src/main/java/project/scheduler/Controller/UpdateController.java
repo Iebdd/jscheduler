@@ -1,5 +1,7 @@
 package project.scheduler.Controller;
 
+import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -26,22 +28,22 @@ public class UpdateController {
   private UserService userService;
 
   @PostMapping(path="/password")
-  public ResponseEntity<String> setPasswordById(@RequestParam String old_password, @RequestParam String new_password, @RequestParam Integer user_id) {
+  public ResponseEntity<String> setPasswordById(@RequestParam String old_password, @RequestParam String new_password, @RequestParam UUID user_id) {
       User new_user = userService.findUserById(user_id).orElse(null);
       if (new_user == null || !Password.compare(old_password, new_user.getPassword())) {
-        return new ResponseEntity<>(String.format("User %d not found or password incorrect%n", user_id), HttpStatus.UNPROCESSABLE_ENTITY);
+        return new ResponseEntity<>(String.format("User %s not found or password incorrect", user_id), HttpStatus.UNPROCESSABLE_ENTITY);
       }
       permissionService.setPassword(new_password, user_id);
-      return ResponseEntity.ok(String.format("Saved new password for user: %d%n", user_id));
+      return ResponseEntity.ok(String.format("Saved new password for user: %s", user_id));
   }
 
   @PatchMapping(path="/password")
-  public ResponseEntity<String> setPasswordByToken(@RequestParam String token, @RequestParam String new_password, @RequestParam Integer user_id) {
+  public ResponseEntity<String> setPasswordByToken(@RequestParam String token, @RequestParam String new_password, @RequestParam UUID user_id) {
     if (!permissionService.validRole(token, user_id, Permissions.Admin)) {
       return new ResponseEntity<>("Insufficient permissions", HttpStatus.UNAUTHORIZED);
     }
     permissionService.setPassword(new_password, user_id);
-    return ResponseEntity.ok(String.format("Saved new password for user: %d%n", user_id));
+    return ResponseEntity.ok(String.format("Saved new password for user: %s", user_id));
   }
   
 }

@@ -10,6 +10,7 @@ import jakarta.inject.Inject;
 import project.scheduler.Services.PermissionService;
 import project.scheduler.Services.UserService;
 import project.scheduler.Tables.User;
+import project.scheduler.Util.UserToken;
 
 
 @RestController
@@ -21,7 +22,7 @@ public class VerifyController {
   private UserService userService;
 
   @PostMapping(path="/login")
-  public ResponseEntity<Object> login(@RequestParam String email, @RequestParam String password) {
+  public ResponseEntity<UserToken> login(@RequestParam String email, @RequestParam String password) {
     String[] tokens;
     User user = userService.findUserByEmail(email);
     if(permissionService.validPassword(email, password)) {

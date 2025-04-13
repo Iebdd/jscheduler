@@ -1,12 +1,14 @@
 package project.scheduler.Repositories;
 
+import java.util.UUID;
+
+import org.springframework.data.jpa.repository.NativeQuery;
 import org.springframework.data.repository.CrudRepository;
 
 import project.scheduler.Tables.Course;
 
-// This will be AUTO IMPLEMENTED by Spring into a Bean called courseRepository
-// CRUD refers Create, Read, Update, Delete
+public interface CourseRepository extends CrudRepository<Course, UUID> {
 
-public interface CourseRepository extends CrudRepository<Course, Integer> {
-
+    @NativeQuery(value = "SELECT * FROM course")
+    Course[] getCourses();
 }

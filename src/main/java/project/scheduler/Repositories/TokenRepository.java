@@ -1,6 +1,7 @@
 package project.scheduler.Repositories;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.NativeQuery;
@@ -10,14 +11,11 @@ import jakarta.transaction.Transactional;
 import project.scheduler.Tables.Token;
 
 
-// This will be AUTO IMPLEMENTED by Spring into a Bean called tokenRepository
-// CRUD refers Create, Read, Update, Delete
-
 @Transactional
-public interface TokenRepository extends CrudRepository<Token, Integer> {
+public interface TokenRepository extends CrudRepository<Token, UUID> {
 
     @NativeQuery(value = "SELECT token FROM tokens WHERE t_user_id= ?1")
-    String[] findTokenByUser(Integer user_id);
+    String[] findTokenByUser(UUID user_id);
 
     @Modifying
     @NativeQuery(value = "DELETE FROM tokens t WHERE t.expiry < ?1")
@@ -25,5 +23,5 @@ public interface TokenRepository extends CrudRepository<Token, Integer> {
 
     @Modifying
     @NativeQuery(value = "UPDATE tokens SET expiry = ?1 WHERE id = ?2")
-    Integer refreshToken(Instant newExpiry, Integer id);
+    Integer refreshToken(Instant newExpiry, UUID id);
 }
