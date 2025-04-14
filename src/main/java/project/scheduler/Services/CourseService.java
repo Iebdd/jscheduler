@@ -16,10 +16,10 @@ public class CourseService {
     @Inject
     private CourseRepository courseRepository;
 
-    public ResponseEntity<String> create(String name) {
+    public ResponseEntity<Course> create(String name) {
         Course c = new Course(name);
-        UUID id = courseRepository.save(c).getId();
-        return ResponseEntity.ok(String.format("Added Course '%s' with id: %s", name, id));
+        courseRepository.save(c);
+        return ResponseEntity.ok(c);
     }
 
     public Optional<Course> findCourseById(UUID course_id) {

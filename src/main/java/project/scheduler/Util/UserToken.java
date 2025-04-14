@@ -1,13 +1,12 @@
 package project.scheduler.Util;
 
-import java.io.Serializable;
 import java.util.UUID;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class UserToken implements Serializable{
+public class UserToken extends Object{
     private String[] tokens;
     private UUID userId;
     private boolean check;

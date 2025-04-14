@@ -35,7 +35,7 @@ public class ReadController {
   private TokenRepository tokenRepository;
 
   @GetMapping(path="/rooms")
-  public ResponseEntity<Room[]> getRooms() {
+  public ResponseEntity<Iterable<Room>> getRooms() {
     return roomService.getRooms();
   }
 
@@ -51,7 +51,7 @@ public class ReadController {
   }
 
   @GetMapping(path="/courses")
-  public ResponseEntity<Course[]> getAllCourses() {
-    return ResponseEntity.ok(courseRepository.getCourses());
+  public ResponseEntity<Iterable<Course>> getAllCourses() {
+    return ResponseEntity.ok(courseRepository.findAll());
   }
 }

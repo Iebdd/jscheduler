@@ -15,17 +15,17 @@ public class RoomService {
     @Inject
     private RoomRepository roomRepository;
 
-    public ResponseEntity<String> create(String name) {
+    public ResponseEntity<Room> create(String name) {
         Room r = new Room(name);
-        UUID id = roomRepository.save(r).getId();
-        return ResponseEntity.ok(String.format("Added Room '%s' with id: %s", name, id));
+        roomRepository.save(r);
+        return ResponseEntity.ok(r);
     }
 
     public Optional<Room> findRoomById(UUID room_id) {
         return roomRepository.findById(room_id);
     }
 
-    public ResponseEntity<Room[]> getRooms() {
-        return ResponseEntity.ok(roomRepository.getAllRooms());
+    public ResponseEntity<Iterable<Room>> getRooms() {
+        return ResponseEntity.ok(roomRepository.findAll());
     }
 }

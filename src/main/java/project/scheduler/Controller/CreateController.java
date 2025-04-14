@@ -18,6 +18,7 @@ import project.scheduler.Services.PermissionService.Permissions;
 import project.scheduler.Services.RoomService;
 import project.scheduler.Services.UserService;
 import project.scheduler.Tables.Course;
+import project.scheduler.Tables.Room;
 import project.scheduler.Tables.User;
 import project.scheduler.Util.Password;
 import project.scheduler.Util.UserToken;
@@ -58,20 +59,20 @@ public class CreateController {
   }
 
   @PostMapping(path="/course")
-  public ResponseEntity<String> addCourse (@RequestParam String courseName, @RequestParam String token) {
+  public ResponseEntity<Course> addCourse (@RequestParam String courseName, @RequestParam String token) {
     if(permissionService.validRole(token, Permissions.Admin)) {
       return courseService.create(courseName);
     } else {
-      return new ResponseEntity<>("Insufficient permissions", HttpStatus.UNAUTHORIZED);
+      return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
     }
   }
 
   @PostMapping(path="/room")
-  public ResponseEntity<String> addRoom(@RequestParam String roomName, @RequestParam String token) {
+  public ResponseEntity<Room> addRoom(@RequestParam String roomName, @RequestParam String token) {
     if(permissionService.validRole(token, Permissions.Admin)) {
       return roomService.create(roomName);
     } else {
-      return new ResponseEntity<>("Insufficient permissions", HttpStatus.UNAUTHORIZED);
+      return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
     }
     
   }
