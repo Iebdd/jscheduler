@@ -1,6 +1,7 @@
 package project.scheduler.Controller;
 
 
+import java.time.Instant;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -11,16 +12,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.inject.Inject;
+import project.scheduler.Services.BookingService;
 import project.scheduler.Services.CourseService;
 import project.scheduler.Services.InscriptionService;
 import project.scheduler.Services.PermissionService;
 import project.scheduler.Services.PermissionService.Permissions;
 import project.scheduler.Services.RoomService;
 import project.scheduler.Services.UserService;
+import project.scheduler.Tables.Bookings;
 import project.scheduler.Tables.Course;
 import project.scheduler.Tables.Room;
 import project.scheduler.Tables.User;
 import project.scheduler.Util.Password;
+import project.scheduler.Util.UserBooking;
 import project.scheduler.Util.UserToken;
 
 
@@ -38,6 +42,8 @@ public class CreateController {
   private CourseService courseService;
   @Inject
   private RoomService roomService;
+  @Inject
+  private BookingService bookingService;
 
   @PostMapping(path="/user")
   public ResponseEntity<UserToken> addNewUser (@RequestParam Integer role, @RequestParam String firstName, 
@@ -63,7 +69,7 @@ public class CreateController {
     if(permissionService.validRole(token, Permissions.Admin)) {
       return courseService.create(courseName);
     } else {
-      return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+      return new ResponseEntity<>(new Course(), HttpStatus.UNAUTHORIZED);
     }
   }
 
@@ -72,9 +78,25 @@ public class CreateController {
     if(permissionService.validRole(token, Permissions.Admin)) {
       return roomService.create(roomName);
     } else {
-      return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+      return new ResponseEntity<>(new Room(), HttpStatus.UNAUTHORIZED);
     }
     
+  }
+
+  @PostMapping(path="/booking")
+  public ResponseEntity<UserBooking> bookRoom(@RequestParam UUID course_id, @RequestParam UUID room_id, @RequestParam Instant start, @RequestParam Instant end, @RequestParam String token) {
+    boolean isAdmin = false;
+    if(permissionService.validRole(token, Permissions.Admin)) {
+      isAdmin = true;
+    } else if(!permissionService.validRole(token, Permissions.Assistant)) {
+      return new ResponseEntity<>(new UserBooking(), HttpStatus.UNAUTHORIZED);
+    }
+    Course course = courseService.findCourseById(course_id).orElse(null); 
+    Room room = roomService.findRoomById(room_id).orElse(null);
+    if(room == null || course == null) {
+      return new ResponseEntity<>(new UserBooking(), HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+    return bookingService.setBooking(course, room, start, end, isAdmin);
   }
 
   @PostMapping(path="/inscription")

@@ -1,20 +1,20 @@
 package project.scheduler.Tables;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import project.scheduler.Services.BookingService.Status;
 
 @Entity(name = "Bookings") 
 public class Bookings {
 
-    @EmbeddedId
+    @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID bookings_id;
 
@@ -28,7 +28,17 @@ public class Bookings {
 
     private Instant start;
     private Instant end;
-    private Duration length;
+    private Status status;
+
+    public Bookings() {};
+
+    public Bookings(Room room, Course course, Instant start, Instant end, Status status) {
+        this.room = room;
+        this.course = course;
+        this.start = start;
+        this.end = end;
+        this.status = status;
+    }
 
     public void setStart(Instant start) {
         this.start = start;
@@ -36,10 +46,6 @@ public class Bookings {
 
     public void setEnd(Instant end) {
         this.end = end;
-    }
-
-    public void setLength(Duration length) {
-        this.length = length;
     }
 
     public UUID getId() {
@@ -70,7 +76,11 @@ public class Bookings {
         return end;
     }
 
-    public Duration getLength() {
-        return length;
+    public Status getStatus() {
+        return this.status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }

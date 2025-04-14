@@ -28,6 +28,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.apache.commons:commons-lang3'
+	implementation 'org.apache.commons:commons-collections4:4.5.0-M3'
 	implementation 'org.springframework.security:spring-security-core'
 	implementation 'jakarta.inject:jakarta.inject-api'
 	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'

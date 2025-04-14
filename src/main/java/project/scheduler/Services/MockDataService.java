@@ -37,9 +37,10 @@ public class MockDataService {          //Automatically inserts mock data on sta
         new Course("Algebra 101"),
         new Course("English Pop Culture")
     };
-
-    private static ArrayList<Room> rooms_obj = new ArrayList<>();
-    private static ArrayList<Course> courses_obj = new ArrayList<>();
+    @SuppressWarnings("unused")
+    private static final ArrayList<Room> rooms_obj = new ArrayList<>();
+    @SuppressWarnings("unused")
+    private static final ArrayList<Course> courses_obj = new ArrayList<>();
 
     private static final Room[] rooms = new Room[] {
         new Room("CZ 001"),
@@ -76,17 +77,21 @@ public class MockDataService {          //Automatically inserts mock data on sta
     }
 
     private void addUsers() {
+        @SuppressWarnings("unused")
         UserToken student1_t = processResponse(addUser(student1.getRole().toString(), student1.getFirstName(), student1.getLastName(), student1.getPassword(), student1.getEmail()));
 /*         if(student1_t != null) {
             inscribe(student1_t.getUserId().toString(), courses_obj.get(0).getId().toString(), student1_t.getFirstToken());
             inscribe(student1_t.getUserId().toString(), courses_obj.get(1).getId().toString(), student1_t.getFirstToken());
         } */
+        @SuppressWarnings("unused")
         UserToken student2_t = processResponse(addUser(student2.getRole().toString(), student2.getFirstName(), student2.getLastName(), student2.getPassword(), student2.getEmail()));
 /*         if(student2_t != null) {
             inscribe(student2_t.getUserId().toString(), courses_obj.get(0).getId().toString(), student2_t.getFirstToken());
             inscribe(student2_t.getUserId().toString(), courses_obj.get(2).getId().toString(), student2_t.getFirstToken());
         } */
+       @SuppressWarnings("unused")
         UserToken student3_t = processResponse(addUser(student3.getRole().toString(), student3.getFirstName(), student3.getLastName(), student3.getPassword(), student3.getEmail()));
+        @SuppressWarnings("unused")
         UserToken assistant_t = processResponse(addUser(assistant.getRole().toString(), assistant.getFirstName(), assistant.getLastName(), assistant.getPassword(), assistant.getEmail()));
 /*         if(student3_t != null && assistant_t != null) {
             inscribe(student3_t.getUserId().toString(), courses_obj.get(1).getId().toString(), assistant_t.getFirstToken());
@@ -114,6 +119,7 @@ public class MockDataService {          //Automatically inserts mock data on sta
         }
     }
 
+    @SuppressWarnings("unused")
     private ResponseEntity<String> inscribe(String userId, String courseId, String token) {
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add("userId", userId);
