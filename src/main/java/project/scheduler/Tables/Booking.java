@@ -12,7 +12,7 @@ import jakarta.persistence.ManyToOne;
 import project.scheduler.Services.BookingService.Status;
 
 @Entity(name = "Bookings") 
-public class Bookings {
+public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -30,9 +30,9 @@ public class Bookings {
     private Instant end;
     private Status status;
 
-    public Bookings() {};
+    public Booking() {};
 
-    public Bookings(Room room, Course course, Instant start, Instant end, Status status) {
+    public Booking(Room room, Course course, Instant start, Instant end, Status status) {
         this.room = room;
         this.course = course;
         this.start = start;

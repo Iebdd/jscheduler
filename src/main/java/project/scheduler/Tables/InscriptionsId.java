@@ -7,7 +7,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 @Embeddable
-public class InscriptionId implements Serializable {
+public class InscriptionsId implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "i_user_id", referencedColumnName = "user_id")
@@ -17,9 +17,9 @@ public class InscriptionId implements Serializable {
     @JoinColumn(name = "i_course_id", referencedColumnName = "course_id")
     private Course course;
 
-    public InscriptionId() {};
+    public InscriptionsId() {};
 
-    public InscriptionId(User user, Course course) {
+    public InscriptionsId(User user, Course course) {
         this.user = user;
         this.course = course;
     }

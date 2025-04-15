@@ -11,7 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 
-@Entity(name="Room")
+@Entity(name="Rooms")
 public class Room { 
    
   @Id
@@ -19,28 +19,28 @@ public class Room {
   private UUID room_id;
   private final LocalTime start = LocalTime.of(7, 0, 0, 0);
   private final LocalTime end = LocalTime.of(20, 0, 0, 0);
-  private String name;
+  private String roomName;
 
   @OneToMany(mappedBy = "room")
   @SuppressWarnings("unused")
-  private final Set<Bookings> roomCourse = new HashSet<>();
+  private final Set<Booking> roomCourse = new HashSet<>();
 
   public Room() {}
 
-  public Room(String name) {
-    this.name = name;
+  public Room(String roomName) {
+    this.roomName = roomName;
   }
 
   public UUID getId() {
-    return room_id;
+    return this.room_id;
   }
 
-  public String getName() {
-    return name;
+  public String getRoomName() {
+    return this.roomName;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setRoomName(String roomName) {
+    this.roomName = roomName;
   }
 
   public LocalTime getStart() {

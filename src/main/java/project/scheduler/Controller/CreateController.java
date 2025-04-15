@@ -19,7 +19,6 @@ import project.scheduler.Services.PermissionService;
 import project.scheduler.Services.PermissionService.Permissions;
 import project.scheduler.Services.RoomService;
 import project.scheduler.Services.UserService;
-import project.scheduler.Tables.Bookings;
 import project.scheduler.Tables.Course;
 import project.scheduler.Tables.Room;
 import project.scheduler.Tables.User;

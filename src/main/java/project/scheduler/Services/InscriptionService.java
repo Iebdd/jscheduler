@@ -1,16 +1,21 @@
 package project.scheduler.Services;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.UUID;
 
+import org.apache.commons.collections4.IterableUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import jakarta.inject.Inject;
 import project.scheduler.Repositories.InscriptionRepository;
+import project.scheduler.Tables.Booking;
 import project.scheduler.Tables.Course;
 import project.scheduler.Tables.Inscription;
 import project.scheduler.Tables.User;
+import project.scheduler.Util.UserBooking;
 
 @Service
 public class InscriptionService {
@@ -37,6 +42,20 @@ public class InscriptionService {
 
     public boolean ifExists(UUID user_id, UUID course_id) {
         return inscriptionRepository.ifExists(user_id, course_id) == 1;
+    }
+
+    public ResponseEntity<UserBooking> verifyInscription(UUID user_id, UUID course_id) {
+        Iterable<Booking> conflicts = inscriptionRepository.findInscriptionConflicts(user_id, course_id);
+        if(IterableUtils.size(conflicts) != 0) {
+            UserBooking bookings = new UserBooking();
+            HashSet<UUID> t_conflicts = new HashSet<>();
+            for (Booking id : conflicts) {
+                t_conflicts.add(id.getCourse().getId());
+            }
+            bookings.setTimeConflicts(new ArrayList<>(t_conflicts));
+            return ResponseEntity.ok(bookings);
+        }
+        return ResponseEntity.ok(new UserBooking());
     }
     
 }

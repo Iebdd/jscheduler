@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.inject.Inject;
+import project.scheduler.Services.BookingService;
+import project.scheduler.Services.BookingService.Status;
 import project.scheduler.Services.PermissionService;
 import project.scheduler.Services.PermissionService.Permissions;
 import project.scheduler.Services.UserService;
@@ -26,6 +28,8 @@ public class UpdateController {
   private PermissionService permissionService;
   @Inject
   private UserService userService;
+  @Inject
+  private BookingService bookingService;
 
   @PostMapping(path="/password")
   public ResponseEntity<String> setPasswordById(@RequestParam String old_password, @RequestParam String new_password, @RequestParam UUID user_id) {
@@ -44,6 +48,14 @@ public class UpdateController {
     }
     permissionService.setPassword(new_password, user_id);
     return ResponseEntity.ok(String.format("Saved new password for user: %s", user_id));
+  }
+
+  @PatchMapping(path="/bookingStatus")
+  public ResponseEntity<Integer> confirmBooking(@RequestParam String token, @RequestParam Status new_status, @RequestParam UUID booking_id) {
+    if(!permissionService.validRole(token, Permissions.Admin)) {
+      return new ResponseEntity<>(0, HttpStatus.UNAUTHORIZED);
+    }
+    return bookingService.updateBookingStatus(new_status, booking_id);
   }
   
 }

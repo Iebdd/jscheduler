@@ -1,49 +1,45 @@
 package project.scheduler.Util;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
+
+
 public class UserBooking {
-    UUID[] room_conflicts;
-    UUID[] course_conflict;
+    ArrayList<UUID> room_conflicts;
+    ArrayList<UUID> time_conflicts;
     UUID booking_id;
 
 
     public UserBooking() {};
 
-    public UserBooking(UUID[] conflicts) {
-        this.conflict = true;
+    public UserBooking(boolean conflict) {
         this.booking_id = null;
-        this.conflicts = conflicts;
-
     }
 
     public UserBooking(UUID booking_id) {
-        this.conflict = false;
         this.booking_id = booking_id;
-        this.conflicts = null;
+        this.room_conflicts = null;
+        this.time_conflicts = null;
     }
 
-    public boolean isConflict() {
-        return conflict;
+    public void setRoomConflicts(ArrayList<UUID> room_conflicts) {
+        this.room_conflicts = room_conflicts;
     }
 
-    public void setConflict(boolean conflict) {
-        this.conflict = conflict;
+    public void setTimeConflicts(ArrayList<UUID> time_conflicts) {
+        this.time_conflicts = time_conflicts;
     }
 
-    public UUID[] getConflicts() {
-        return conflicts;
+    public ArrayList<UUID> getRoomConflicts() {
+        return this.room_conflicts;
     }
 
-    public void setConflicts(UUID[] conflicts) {
-        this.conflicts = conflicts;
+    public ArrayList<UUID> getTimeConflicts() {
+        return this.time_conflicts;
     }
 
     public UUID getBooking_id() {
-        return booking_id;
-    }
-
-    public void setBooking_id(UUID booking_id) {
-        this.booking_id = booking_id;
+        return this.booking_id;
     }
 }

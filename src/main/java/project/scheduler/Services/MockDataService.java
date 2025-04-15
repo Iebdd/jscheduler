@@ -29,7 +29,7 @@ public class MockDataService {          //Automatically inserts mock data on sta
     private static final User assistant = new User(1, "Linda", "Lindisfarne", "password", "assistant@scheduler.com");
     private static final User student1 = new User(0, "Hans", "Heimer", "67890", "student1@scheduler.com");
     private static final User student2 = new User(0, "Brenda", "McDonald", "!aOssU78D2", "student2@scheduler.com");
-    private static final User student3 = new User(0, "Armaud", "Pernault", "baguette", "honhon@scheduler.com");
+    private static final User student3 = new User(0, "Armaud", "Pernault", "baguette", "student3@scheduler.com");
 
 
     private static final Course[] courses = new Course[] {
@@ -60,7 +60,6 @@ public class MockDataService {          //Automatically inserts mock data on sta
             addRooms(token.getFirstToken());
         }
         addUsers();
-
     }
 
     private <T> T processResponse(ResponseEntity<T> response) {
@@ -89,7 +88,7 @@ public class MockDataService {          //Automatically inserts mock data on sta
             inscribe(student2_t.getUserId().toString(), courses_obj.get(0).getId().toString(), student2_t.getFirstToken());
             inscribe(student2_t.getUserId().toString(), courses_obj.get(2).getId().toString(), student2_t.getFirstToken());
         } */
-       @SuppressWarnings("unused")
+        @SuppressWarnings("unused")
         UserToken student3_t = processResponse(addUser(student3.getRole().toString(), student3.getFirstName(), student3.getLastName(), student3.getPassword(), student3.getEmail()));
         @SuppressWarnings("unused")
         UserToken assistant_t = processResponse(addUser(assistant.getRole().toString(), assistant.getFirstName(), assistant.getLastName(), assistant.getPassword(), assistant.getEmail()));
@@ -104,7 +103,7 @@ public class MockDataService {          //Automatically inserts mock data on sta
         for(Course course : courses) {
             map.add("courseName", course.getName());
             map.add("token", token);
-            courses_obj.add(sendPostCourse(URI + "/add/course", map).getBody());
+            sendPostCourse(URI + "/add/course", map);
             map.clear();
         }
     }
@@ -112,7 +111,7 @@ public class MockDataService {          //Automatically inserts mock data on sta
     private void addRooms(String token) {
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         for(Room room : rooms) {
-            map.add("roomName", room.getName());
+            map.add("roomName", room.getRoomName());
             map.add("token", token);
             sendPostRoom(URI + "/add/room", map);
             map.clear();

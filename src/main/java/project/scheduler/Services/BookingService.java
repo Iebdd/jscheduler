@@ -1,7 +1,7 @@
 package project.scheduler.Services;
 
 import java.time.Instant;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import org.apache.commons.collections4.IterableUtils;
@@ -10,8 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import jakarta.inject.Inject;
-import project.scheduler.Repositories.BookingsRepository;
-import project.scheduler.Tables.Bookings;
+import project.scheduler.Repositories.BookingRepository;
+import project.scheduler.Tables.Booking;
 import project.scheduler.Tables.Course;
 import project.scheduler.Tables.Room;
 import project.scheduler.Util.UserBooking;
@@ -20,7 +20,7 @@ import project.scheduler.Util.UserBooking;
 public class BookingService {
 
     @Inject
-    private BookingsRepository bookingsRepository;
+    private BookingRepository bookingRepository;
 
     public enum Status {
         Set(0),
@@ -38,17 +38,37 @@ public class BookingService {
     }
 
     public ResponseEntity<UserBooking> setBooking(Course course, Room room, Instant start, Instant end, boolean isAdmin) {
-        Iterable<Bookings> conflict_bookings = bookingsRepository.getConflicts(start, end, course.getId(), room.getId());
-        if(IterableUtils.size(conflict_bookings) != 0) {
-            UUID[] conflicts = new UUID[IterableUtils.size(conflict_bookings)];
-            Iterator<Bookings> cb_it = conflict_bookings.iterator();
-            for(int index = 0; index < conflicts.length; index++) {
-                conflicts[index] = cb_it.next().getId();
+        Iterable<Booking> rconflicts_it = bookingRepository.getRoomConflicts(start, end, room.getId());
+        Iterable<Booking> tconflicts_it = bookingRepository.getTimeConflicts(start, end , course.getId());
+        int room_num = IterableUtils.size(rconflicts_it);
+        int time_num = IterableUtils.size(tconflicts_it);
+        if (room_num != 0 || time_num != 0) {
+            UserBooking c_booking = new UserBooking(true);
+            ArrayList<UUID> r_conflicts;
+            ArrayList<UUID> t_conflicts;
+            if(room_num != 0) {
+                r_conflicts = new ArrayList<>();
+                for(Booking booking : rconflicts_it) {
+                    r_conflicts.add(booking.getId());
+                }
+                c_booking.setRoomConflicts(r_conflicts);
             }
-            return new ResponseEntity<>(new UserBooking(conflicts), HttpStatus.CONFLICT);
+            if(time_num != 0) {
+                t_conflicts = new ArrayList<>();
+                for (Booking booking : tconflicts_it) {
+                    t_conflicts.add(booking.getId());
+                }
+                c_booking.setTimeConflicts(t_conflicts);
+            }
+            return new ResponseEntity<>(c_booking, HttpStatus.CONFLICT);
         }
+
         Status status = (isAdmin) ? Status.Set : Status.Planned;
-        UUID new_id = bookingsRepository.save(new Bookings(room, course, start, end, status)).getId();
+        UUID new_id = bookingRepository.save(new Booking(room, course, start, end, status)).getId();
         return ResponseEntity.ok(new UserBooking(new_id));
+    }
+
+    public ResponseEntity<Integer> updateBookingStatus(Status status, UUID course_id) {
+        return ResponseEntity.ok(bookingRepository.updateStatus(status, course_id));
     }
 }

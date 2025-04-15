@@ -22,7 +22,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity()
-@Table(name="User")
+@Table(name="Users")
 public class User {
 
   @Id
@@ -48,7 +48,7 @@ public class User {
   
   @ManyToMany(cascade = {CascadeType.ALL})
   @JoinTable(
-    name = "Inscription",
+    name = "inscriptions",
     joinColumns = {@JoinColumn(name = "i_user_id")},
     inverseJoinColumns = {@JoinColumn(name = "i_course_id")}
   )

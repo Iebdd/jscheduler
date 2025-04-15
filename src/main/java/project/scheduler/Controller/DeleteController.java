@@ -38,4 +38,6 @@ public class DeleteController {
     }
     return inscriptionService.remove(user_id, course_id);
   }
+
+
 }
