@@ -99,31 +99,20 @@ public class CreateController {
   }
 
   @PostMapping(path="/inscription")
-  public ResponseEntity<String> inscribeStudent(@RequestParam UUID user_id, @RequestParam UUID course_id, @RequestParam String token) {
+  public ResponseEntity<UserBooking> inscribeStudent(@RequestParam UUID user_id, @RequestParam UUID course_id, @RequestParam String token) {
     if(!permissionService.validRole(token, user_id, Permissions.Assistant)) {
-      return new ResponseEntity<>("Insufficient permissions", HttpStatus.UNAUTHORIZED);
+      return new ResponseEntity<>(new UserBooking(), HttpStatus.UNAUTHORIZED);
     }
     if(inscriptionService.ifExists(user_id, course_id)) {
-      return new ResponseEntity<>(String.format("User: %s is already inscribed in Course: %s", user_id, course_id), HttpStatus.CONFLICT);
+      return new ResponseEntity<>(new UserBooking(), HttpStatus.CONFLICT);
     }
     User user = userService.findUserById(user_id).orElse(null);
     Course course = courseService.findCourseById(course_id).orElse(null);
     try {
-      inscriptionService.inscribe(user, course);
-      return ResponseEntity.ok(String.format("Inscribed User: %s into Course: %s", user_id, course_id));
+      
+      return ResponseEntity.ok(inscriptionService.inscribe(user, course));
     } catch (NullPointerException e) {
-      StringBuilder response = new StringBuilder();
-      if (user == null) {
-        response.append(String.format("User: %s ", user_id));
-      }
-      if (course == null) {
-        if(!response.isEmpty()) {
-          response.append("and ");
-        }
-        response.append(String.format("Course: %s", course_id));
-      }
-      response.append(" could not be found.");
-      return new ResponseEntity<>(response.toString(), HttpStatus.UNPROCESSABLE_ENTITY);
+      return new ResponseEntity<>(new UserBooking(), HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
 }

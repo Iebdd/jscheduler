@@ -8,5 +8,5 @@ import project.scheduler.Tables.Room;
 
 public interface RoomRepository extends CrudRepository<Room, UUID> {
 
-
+    Room findByRoomName(String name);
 }

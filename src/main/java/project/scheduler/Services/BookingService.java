@@ -71,4 +71,12 @@ public class BookingService {
     public ResponseEntity<Integer> updateBookingStatus(Status status, UUID course_id) {
         return ResponseEntity.ok(bookingRepository.updateStatus(status, course_id));
     }
+
+    public Booking findBookingById(UUID booking_id) {
+        return bookingRepository.findById(booking_id).orElse(null);
+    }
+
+    public Integer removeBookingById(UUID booking_id) {
+        return bookingRepository.removeById(booking_id);
+    }
 }

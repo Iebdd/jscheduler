@@ -37,15 +37,17 @@ public class MockDataService {          //Automatically inserts mock data on sta
         new Course("Algebra 101"),
         new Course("English Pop Culture")
     };
-    @SuppressWarnings("unused")
-    private static final ArrayList<Room> rooms_obj = new ArrayList<>();
-    @SuppressWarnings("unused")
-    private static final ArrayList<Course> courses_obj = new ArrayList<>();
+    private static final ArrayList<String> rooms_obj = new ArrayList<>();
+    private static final ArrayList<String> courses_obj = new ArrayList<>();
 
     private static final Room[] rooms = new Room[] {
         new Room("CZ 001"),
         new Room("CZ 002"),
         new Room("CZ 003")
+    };
+
+    private static final String[] times = new String[] {
+        "2025-04-16T15:00:00Z", "2025-04-16T17:00:00Z"
     };
     
 
@@ -60,6 +62,7 @@ public class MockDataService {          //Automatically inserts mock data on sta
             addRooms(token.getFirstToken());
         }
         addUsers();
+        addBookings();
     }
 
     private <T> T processResponse(ResponseEntity<T> response) {
@@ -75,27 +78,27 @@ public class MockDataService {          //Automatically inserts mock data on sta
         }
     }
 
+    private void addBookings() {
+        
+    }
+
     private void addUsers() {
-        @SuppressWarnings("unused")
         UserToken student1_t = processResponse(addUser(student1.getRole().toString(), student1.getFirstName(), student1.getLastName(), student1.getPassword(), student1.getEmail()));
-/*         if(student1_t != null) {
-            inscribe(student1_t.getUserId().toString(), courses_obj.get(0).getId().toString(), student1_t.getFirstToken());
-            inscribe(student1_t.getUserId().toString(), courses_obj.get(1).getId().toString(), student1_t.getFirstToken());
-        } */
-        @SuppressWarnings("unused")
+        if(student1_t != null) {
+            inscribe(student1_t.getUserId().toString(), courses_obj.get(0), student1_t.getFirstToken());
+            inscribe(student1_t.getUserId().toString(), courses_obj.get(1), student1_t.getFirstToken());
+        }
         UserToken student2_t = processResponse(addUser(student2.getRole().toString(), student2.getFirstName(), student2.getLastName(), student2.getPassword(), student2.getEmail()));
-/*         if(student2_t != null) {
-            inscribe(student2_t.getUserId().toString(), courses_obj.get(0).getId().toString(), student2_t.getFirstToken());
-            inscribe(student2_t.getUserId().toString(), courses_obj.get(2).getId().toString(), student2_t.getFirstToken());
-        } */
-        @SuppressWarnings("unused")
+        if(student2_t != null) {
+            inscribe(student2_t.getUserId().toString(), courses_obj.get(0), student2_t.getFirstToken());
+            inscribe(student2_t.getUserId().toString(), courses_obj.get(2), student2_t.getFirstToken());
+        }
         UserToken student3_t = processResponse(addUser(student3.getRole().toString(), student3.getFirstName(), student3.getLastName(), student3.getPassword(), student3.getEmail()));
-        @SuppressWarnings("unused")
         UserToken assistant_t = processResponse(addUser(assistant.getRole().toString(), assistant.getFirstName(), assistant.getLastName(), assistant.getPassword(), assistant.getEmail()));
-/*         if(student3_t != null && assistant_t != null) {
-            inscribe(student3_t.getUserId().toString(), courses_obj.get(1).getId().toString(), assistant_t.getFirstToken());
-            inscribe(student3_t.getUserId().toString(), courses_obj.get(2).getId().toString(), assistant_t.getFirstToken());
-        } */
+        if(student3_t != null && assistant_t != null) {
+            inscribe(student3_t.getUserId().toString(), courses_obj.get(1), assistant_t.getFirstToken());
+            inscribe(student3_t.getUserId().toString(), courses_obj.get(2), assistant_t.getFirstToken());
+        }
     }
 
     private void addCourses(String token) {
@@ -103,56 +106,41 @@ public class MockDataService {          //Automatically inserts mock data on sta
         for(Course course : courses) {
             map.add("courseName", course.getName());
             map.add("token", token);
-            sendPostCourse(URI + "/add/course", map);
+            sendPost(URI + "/add/course", map, Course.class);
             map.clear();
+            courses_obj.add(sendGet(URI + "/read/courseName/" + course.getName(), String.class).getBody());
         }
     }
 
-    private void addRooms(String token) {
+     private void addRooms(String token) {
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         for(Room room : rooms) {
             map.add("roomName", room.getRoomName());
             map.add("token", token);
-            sendPostRoom(URI + "/add/room", map);
+            sendPost(URI + "/add/room", map, Room.class);
             map.clear();
+            rooms_obj.add(sendGet(URI + "/read/roomName/" + room.getRoomName(), String.class).getBody());
         }
     }
 
-    @SuppressWarnings("unused")
+
     private ResponseEntity<String> inscribe(String userId, String courseId, String token) {
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("userId", userId);
-        map.add("courseId", courseId);
+        map.add("user_id", userId);
+        map.add("course_id", courseId);
         map.add("token", token);
-        return sendPostString(URI + "/add/inscription", map);
+        return sendPost(URI + "/add/inscription", map, String.class);
     }
 
-    private ResponseEntity<UserToken> sendPostUserToken(String uri, MultiValueMap<String, String> map) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
-        return restTemplate.postForEntity(uri, request, UserToken.class);
+    private <T> ResponseEntity<T> sendGet(String uri, Class<T> response_type) {
+        return restTemplate.getForEntity(uri, response_type);
     }
 
-    private ResponseEntity<Room> sendPostRoom(String uri, MultiValueMap<String, String> map) {
+    private <T> ResponseEntity<T> sendPost(String uri, MultiValueMap<String, String> map, Class<T> response_type) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
-        return restTemplate.postForEntity(uri, request, Room.class);
-    }
-
-    private ResponseEntity<Course> sendPostCourse(String uri, MultiValueMap<String, String> map) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
-        return restTemplate.postForEntity(uri, request, Course.class);
-    }
-    
-    private ResponseEntity<String> sendPostString(String uri, MultiValueMap<String, String> map) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
-        return restTemplate.postForEntity(uri, request, String.class);
+        return restTemplate.postForEntity(uri, request, response_type);
     }
 
     private ResponseEntity<UserToken> addUser(String role, String firstName, String lastName, String password, String email) {
@@ -162,7 +150,7 @@ public class MockDataService {          //Automatically inserts mock data on sta
         map.add("firstName", firstName);
         map.add("password", password);
         map.add("email", email);
-        return sendPostUserToken(URI + "/add/user", map);
+        return sendPost(URI + "/add/user", map, UserToken.class);
     }
 
 }

@@ -23,4 +23,8 @@ public interface BookingRepository extends CrudRepository<Booking, UUID> {
     @Modifying
     @NativeQuery(value = "UPDATE bookings b SET b.status = ?1 WHERE b.bookings_id = ?2")
     Integer updateStatus(Status status, UUID course_id);
+
+    @Modifying
+    @NativeQuery(value = "DELETE FROM bookings b WHERE b.bookings_id = ?1")
+    Integer removeById(UUID bookings_id);
 }

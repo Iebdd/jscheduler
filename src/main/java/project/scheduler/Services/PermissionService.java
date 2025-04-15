@@ -41,12 +41,12 @@ public class PermissionService {
 
     public boolean validRole(String token, UUID user_id, Permissions role) {         //Checks required permission and allows the role threshold
         User active_user = userRepository.findUserByToken(token);                       //or if the user requesting the change is using the same id
-        return !(!active_user.getUserId().equals(user_id) && active_user.getRole() < role.getNum());
+        return (active_user != null) ? !(!active_user.getUserId().equals(user_id) && active_user.getRole() < role.getNum()) : false;
     }
 
     public boolean validRole(String token, Permissions role) {                          //Checks required permissions but only allowed the change
         User active_user = userRepository.findUserByToken(token);                       //with the necessary permissions
-        return !(active_user.getRole() < role.getNum());
+        return (active_user != null) ? !(active_user.getRole() < role.getNum()) : false;
     }
 
     public boolean validPassword(String new_password, String old_password) {

@@ -7,4 +7,6 @@ import org.springframework.data.repository.CrudRepository;
 import project.scheduler.Tables.Course;
 
 public interface CourseRepository extends CrudRepository<Course, UUID> {
+
+    Course findByCourseName(String name);
 }

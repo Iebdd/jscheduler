@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,11 +22,11 @@ public class Course {
 
     private String courseName;
 
-    @SuppressWarnings("unused")
+    @JsonIgnore
     @ManyToMany(mappedBy = "course")  // Match property in UserCourse
     private final Set<User> user = new HashSet<>(); // Relationship with UserCourse
 
-    @SuppressWarnings("unused")
+    @JsonIgnore
     @OneToMany(mappedBy = "course")
     private final Set<Booking> roomCourse = new HashSet<>();
 

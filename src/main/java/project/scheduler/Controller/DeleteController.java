@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.inject.Inject;
+import project.scheduler.Services.BookingService;
 import project.scheduler.Services.InscriptionService;
 import project.scheduler.Services.PermissionService;
 import project.scheduler.Services.PermissionService.Permissions;
@@ -23,6 +24,8 @@ public class DeleteController {
   private InscriptionService inscriptionService;
   @Inject
   private PermissionService permissionService;
+  @Inject
+  private BookingService bookingService;
 
 
   /*
@@ -39,5 +42,12 @@ public class DeleteController {
     return inscriptionService.remove(user_id, course_id);
   }
 
+  @PostMapping(path="/booking")
+    public ResponseEntity<Integer> removeBooking(@RequestParam UUID booking_id, @RequestParam String token) {
+      if(!permissionService.validRole(token, Permissions.Admin)) {
+        return new ResponseEntity<>(0, HttpStatus.UNAUTHORIZED);
+      }
+      return ResponseEntity.ok(bookingService.removeBookingById(booking_id));
+    }
 
 }

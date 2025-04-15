@@ -18,11 +18,18 @@ public class CourseService {
 
     public ResponseEntity<Course> create(String name) {
         Course c = new Course(name);
-        courseRepository.save(c);
-        return ResponseEntity.ok(c);
+        return ResponseEntity.ok(courseRepository.save(c));
     }
 
     public Optional<Course> findCourseById(UUID course_id) {
         return courseRepository.findById(course_id);
+    }
+
+    public Iterable<Course> findAllCourses() {
+        return courseRepository.findAll();
+    }
+
+    public Course findCourseByName(String name) {
+        return courseRepository.findByCourseName(name);
     }
 }

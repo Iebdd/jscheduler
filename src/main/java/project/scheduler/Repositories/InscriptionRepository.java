@@ -25,7 +25,3 @@ public interface InscriptionRepository extends CrudRepository<Inscription, Inscr
     Iterable<Booking> findInscriptionConflicts(UUID user_id, UUID course_id);
 
 }
-
-
-//SELECT * FROM (SELECT i_course_id FROM inscriptions i WHERE i.i_user_id = ?1) i, bookings b WHERE b.b_course_id = i.i_course_id AND i_course_id != ?2 - Get all inscribed courses except for select one
-// SELECT start o_start, end o_end FROM inscriptions i, bookings b WHERE i.i_user_id = ?1 AND b.b_course_id = ?2 - Get times for select course

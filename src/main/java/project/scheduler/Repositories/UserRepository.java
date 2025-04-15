@@ -15,9 +15,6 @@ public interface UserRepository extends CrudRepository<User, UUID> {
     @NativeQuery(value = "SELECT * FROM users u WHERE u.firstName= ?1 AND u.lastName = ?2")
     User findUserByName(String firstName, String lastName);
 
-    @NativeQuery(value = "IF EXISTS (SELECT 1 FROM users u WHERE u.id = ?1 AND u.password = ?2)")
-    Boolean verifyPassword(UUID user_id, String password);
-
     @NativeQuery(value = "SELECT * FROM users u WHERE u.email = lower(?1)")
     User findUserByEmail(String email);
 

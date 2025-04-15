@@ -36,15 +36,17 @@ public class InscriptionService {
         }
     }
 
-    public void inscribe(User user, Course course) {
+    public UserBooking inscribe(User user, Course course) {
+        UserBooking conflicts = verifyInscription(user.getUserId(), course.getId());
         inscriptionRepository.save(new Inscription(user, course));
+        return conflicts;
     }
 
     public boolean ifExists(UUID user_id, UUID course_id) {
         return inscriptionRepository.ifExists(user_id, course_id) == 1;
     }
 
-    public ResponseEntity<UserBooking> verifyInscription(UUID user_id, UUID course_id) {
+    public UserBooking verifyInscription(UUID user_id, UUID course_id) {
         Iterable<Booking> conflicts = inscriptionRepository.findInscriptionConflicts(user_id, course_id);
         if(IterableUtils.size(conflicts) != 0) {
             UserBooking bookings = new UserBooking();
@@ -53,9 +55,9 @@ public class InscriptionService {
                 t_conflicts.add(id.getCourse().getId());
             }
             bookings.setTimeConflicts(new ArrayList<>(t_conflicts));
-            return ResponseEntity.ok(bookings);
+            return bookings;
         }
-        return ResponseEntity.ok(new UserBooking());
+        return new UserBooking();
     }
     
 }

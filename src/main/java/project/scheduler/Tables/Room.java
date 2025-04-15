@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,8 +23,8 @@ public class Room {
   private final LocalTime end = LocalTime.of(20, 0, 0, 0);
   private String roomName;
 
+  @JsonIgnore
   @OneToMany(mappedBy = "room")
-  @SuppressWarnings("unused")
   private final Set<Booking> roomCourse = new HashSet<>();
 
   public Room() {}

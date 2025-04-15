@@ -28,4 +28,8 @@ public class RoomService {
     public ResponseEntity<Iterable<Room>> getRooms() {
         return ResponseEntity.ok(roomRepository.findAll());
     }
+
+    public Room findRoomByName(String name) {
+        return roomRepository.findByRoomName(name);
+    }
 }
