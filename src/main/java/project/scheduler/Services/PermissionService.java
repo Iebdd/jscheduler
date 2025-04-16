@@ -2,6 +2,7 @@ package project.scheduler.Services;
 
 import java.time.Instant;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,8 @@ import project.scheduler.Util.UserToken;
 
 @Service
 public class PermissionService {
+
+    public static int TOKEN_LENGTH = 25;
     
     @Inject
     private UserRepository userRepository;
@@ -44,7 +47,7 @@ public class PermissionService {
         return (active_user != null) ? !(!active_user.getUserId().equals(user_id) && active_user.getRole() < role.getNum()) : false;
     }
 
-    public boolean validRole(String token, Permissions role) {                          //Checks required permissions but only allowed the change
+    public boolean validRole(String token, Permissions role) {                          //Checks required permissions but only allows the change
         User active_user = userRepository.findUserByToken(token);                       //with the necessary permissions
         return (active_user != null) ? !(active_user.getRole() < role.getNum()) : false;
     }
@@ -59,7 +62,7 @@ public class PermissionService {
     }
 
     public ResponseEntity<UserToken> setToken(User user) {
-        UserToken new_token = new UserToken(user.getUserId());
+        UserToken new_token = new UserToken(user.getUserId(), TOKEN_LENGTH);
         tokenRepository.save(new Token(user, new_token.getFirstToken(), Instant.now().plusSeconds(604800)));
         return ResponseEntity.ok(new_token);
     }
@@ -77,7 +80,18 @@ public class PermissionService {
         return tokenRepository.findTokenByUser(user_id);
     }
 
+    public Iterable<Token> findAllTokens() {
+        return tokenRepository.findAll();
+    }
+
     public void setPassword(String new_password, UUID user_id) {
         userRepository.updatePassword(new Password(new_password).getPassword(), user_id);
+    }
+
+    public String validAuthHeader(String header) { 
+        System.out.println(header);
+        System.out.println();
+        System.out.println(Pattern.matches(header, "^Bearer ([A-Za-z0-9]{25})$"));
+        return Pattern.compile("^Bearer ([A-Za-z0-9]{25})$").matcher(header).group();
     }
 }

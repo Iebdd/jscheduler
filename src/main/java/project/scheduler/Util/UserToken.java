@@ -23,8 +23,8 @@ public class UserToken extends Object{
         this.check = check;
     }
 
-    public UserToken(UUID userId) {
-        this.tokens = new String[]{createToken()};
+    public UserToken(UUID userId, int token_length) {
+        this.tokens = new String[]{createToken(token_length)};
         this.userId = userId;
         this.check = false;
     }
@@ -48,9 +48,9 @@ public class UserToken extends Object{
         return this.check;
     }
 
-    private String createToken() {
+    private String createToken(int token_length) {
         RandomStringUtils tok_gen = RandomStringUtils.secure();
-        return tok_gen.next(25, true, true);
+        return tok_gen.next(token_length, true, true);
     }
 
     public UUID getUserId() {

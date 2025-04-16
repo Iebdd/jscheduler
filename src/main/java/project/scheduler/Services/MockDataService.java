@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import project.scheduler.Tables.Course;
 import project.scheduler.Tables.Room;
 import project.scheduler.Tables.User;
+import project.scheduler.Util.UserBooking;
 import project.scheduler.Util.UserToken;
 
 @Service
@@ -46,13 +47,27 @@ public class MockDataService {          //Automatically inserts mock data on sta
         new Room("CZ 003")
     };
 
-    private static final String[] times = new String[] {
-        "2025-04-16T15:00:00Z", "2025-04-16T17:00:00Z"
+    private static final String[][] times = new String[][] {
+        {"2025-04-25T15:00:00Z", "2025-04-25T17:00:00Z"},
+        {"2025-04-25T18:00:00Z", "2025-04-25T19:45:00Z"},
+        {"2025-04-25T12:30:00Z", "2025-04-25T15:15:00Z"}
     };
     
 
     public void init() {
-        addAdmin(admin);
+        if(isAdminPresent()) {
+            System.out.println("Mock Data present");
+        } else {
+            addAdmin(admin);
+        }
+    }
+
+    private boolean isAdminPresent() {
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("email", admin.getEmail());
+        map.add("password", admin.getPassword());
+        ResponseEntity<UserToken> admin_response = sendPost(URI + "/verify/login", map, UserToken.class);
+        return (admin_response != null);
     }
 
     private void addAdmin(User admin) {
@@ -60,9 +75,11 @@ public class MockDataService {          //Automatically inserts mock data on sta
         if(token != null) {
             addCourses(token.getFirstToken());
             addRooms(token.getFirstToken());
+            addUsers();
+            addBookings(token.getFirstToken());
+        } else {
+            System.out.println("Admin trouble!");
         }
-        addUsers();
-        addBookings();
     }
 
     private <T> T processResponse(ResponseEntity<T> response) {
@@ -78,8 +95,16 @@ public class MockDataService {          //Automatically inserts mock data on sta
         }
     }
 
-    private void addBookings() {
-        
+    private void addBookings(String token) {
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        for(int outer_i = 0; outer_i < courses.length; outer_i++) {
+            map.add("course_id", courses_obj.get(outer_i));
+            map.add("room_id", rooms_obj.get(outer_i));
+            map.add("start", times[outer_i][0]);
+            map.add("end", times[outer_i][1]);
+            sendPost(URI + "/add/booking", token, map, UserBooking.class);
+            map.clear();
+        }
     }
 
     private void addUsers() {
@@ -106,9 +131,9 @@ public class MockDataService {          //Automatically inserts mock data on sta
         for(Course course : courses) {
             map.add("courseName", course.getName());
             map.add("token", token);
-            sendPost(URI + "/add/course", map, Course.class);
+            sendPost(URI + "/add/course", token, map, Course.class);
             map.clear();
-            courses_obj.add(sendGet(URI + "/read/courseName/" + course.getName(), String.class).getBody());
+            courses_obj.add(sendGet(URI + "/read/courseName/" + course.getName(), String.class));
         }
     }
 
@@ -116,10 +141,9 @@ public class MockDataService {          //Automatically inserts mock data on sta
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         for(Room room : rooms) {
             map.add("roomName", room.getRoomName());
-            map.add("token", token);
-            sendPost(URI + "/add/room", map, Room.class);
+            sendPost(URI + "/add/room", token, map, Room.class);
             map.clear();
-            rooms_obj.add(sendGet(URI + "/read/roomName/" + room.getRoomName(), String.class).getBody());
+            rooms_obj.add(sendGet(URI + "/read/roomName/" + room.getRoomName(), String.class));
         }
     }
 
@@ -129,16 +153,24 @@ public class MockDataService {          //Automatically inserts mock data on sta
         map.add("user_id", userId);
         map.add("course_id", courseId);
         map.add("token", token);
-        return sendPost(URI + "/add/inscription", map, String.class);
+        return sendPost(URI + "/add/inscription", token, map, String.class);
     }
 
-    private <T> ResponseEntity<T> sendGet(String uri, Class<T> response_type) {
-        return restTemplate.getForEntity(uri, response_type);
+    private <T> T sendGet(String uri, Class<T> response_type) {
+        return restTemplate.getForObject(uri, response_type);
     }
 
     private <T> ResponseEntity<T> sendPost(String uri, MultiValueMap<String, String> map, Class<T> response_type) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+        return restTemplate.postForEntity(uri, request, response_type);
+    }
+
+    private <T> ResponseEntity<T> sendPost(String uri, String token, MultiValueMap<String, String> map, Class<T> response_type) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.add("Authorization", "Bearer " + token);
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
         return restTemplate.postForEntity(uri, request, response_type);
     }

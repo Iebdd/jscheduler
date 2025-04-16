@@ -19,7 +19,7 @@ public class Token {
   @Id
   @GeneratedValue(strategy=GenerationType.UUID)
   @Column(name="id")
-  private UUID id;
+  private UUID token_id;
 
   @Column(nullable = false)
   private String token;
@@ -47,7 +47,7 @@ public class Token {
   }
 
   public UUID getId() {
-    return id;
+    return token_id;
   }
 
   public String getToken() {

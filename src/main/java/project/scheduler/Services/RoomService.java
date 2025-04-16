@@ -25,7 +25,7 @@ public class RoomService {
         return roomRepository.findById(room_id);
     }
 
-    public ResponseEntity<Iterable<Room>> getRooms() {
+    public ResponseEntity<Iterable<Room>> findAllRooms() {
         return ResponseEntity.ok(roomRepository.findAll());
     }
 

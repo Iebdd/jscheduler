@@ -16,15 +16,22 @@ import project.scheduler.Tables.Course;
 import project.scheduler.Tables.Room;
 import project.scheduler.Util.UserBooking;
 
+/**
+ * The service responsible for bookings (Courses taking place in a room at a specific time)
+ */
 @Service
 public class BookingService {
 
     @Inject
     private BookingRepository bookingRepository;
 
+    /**
+     * An enum representing the possible stati of a booking
+     */
     public enum Status {
         Set(0),
-        Planned(1);
+        Planned(1),
+        Preference(2);
     
         private final int num;
     
@@ -37,7 +44,18 @@ public class BookingService {
         }
     }
 
-    public ResponseEntity<UserBooking> setBooking(Course course, Room room, Instant start, Instant end, boolean isAdmin) {
+    /**
+     * Sets a booking and confirms possible conflicts
+     * 
+     * @param course    
+     * @param room
+     * @param start
+     * @param end
+     * @param status
+     * 
+     * @return
+     */
+    public ResponseEntity<UserBooking> setBooking(Course course, Room room, Instant start, Instant end, Status status) {
         Iterable<Booking> rconflicts_it = bookingRepository.getRoomConflicts(start, end, room.getId());
         Iterable<Booking> tconflicts_it = bookingRepository.getTimeConflicts(start, end , course.getId());
         int room_num = IterableUtils.size(rconflicts_it);
@@ -63,7 +81,6 @@ public class BookingService {
             return new ResponseEntity<>(c_booking, HttpStatus.CONFLICT);
         }
 
-        Status status = (isAdmin) ? Status.Set : Status.Planned;
         UUID new_id = bookingRepository.save(new Booking(room, course, start, end, status)).getId();
         return ResponseEntity.ok(new UserBooking(new_id));
     }
@@ -78,5 +95,9 @@ public class BookingService {
 
     public Integer removeBookingById(UUID booking_id) {
         return bookingRepository.removeById(booking_id);
+    }
+
+    public ResponseEntity<Iterable<Booking>> findAllBookingsByUser(UUID user_id) {
+        return ResponseEntity.ok(bookingRepository.findAllByUserId(user_id));
     }
 }
