@@ -13,6 +13,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 
+/**
+ * Class representation of Room entries
+ */
 @Entity(name="Rooms")
 public class Room { 
    
@@ -23,32 +26,66 @@ public class Room {
   private final LocalTime end = LocalTime.of(20, 0, 0, 0);
   private String roomName;
 
+  @SuppressWarnings("unused")
   @JsonIgnore
   @OneToMany(mappedBy = "room")
   private final Set<Booking> roomCourse = new HashSet<>();
 
+  /**
+   * Default constructor
+   */
   public Room() {}
 
+  /**
+   * Full constructor
+   * 
+   * @param roomName  The instance room name
+   */
   public Room(String roomName) {
     this.roomName = roomName;
   }
 
+  /**
+   * Getter for the room id
+   * 
+   * @return  The instance room id
+   */
   public UUID getId() {
     return this.room_id;
   }
 
+  /**
+   * Getter for room name
+   * 
+   * @return  The instance room name
+   */
   public String getRoomName() {
     return this.roomName;
   }
 
+  /**
+   * Setter for room name
+   * 
+   * @param roomName  The room name to be set
+   */
   public void setRoomName(String roomName) {
     this.roomName = roomName;
   }
 
+  /**
+   * Getter for start (The earliest courses can take place)
+   * 
+   * @return  The start time
+   */
   public LocalTime getStart() {
     return start;
   }
 
+  /**
+   * Getter for end (The latest courses can take place)
+   * 
+   * @return  The end time
+   */
   public LocalTime getEnd() {
     return end;
   } 

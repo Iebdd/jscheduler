@@ -13,6 +13,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 
+/**
+ * Class representation of Course entries
+ */
 @Entity(name="Courses")
 public class Course {
 
@@ -22,34 +25,54 @@ public class Course {
 
     private String courseName;
 
+    @SuppressWarnings("unused")
     @JsonIgnore
-    @ManyToMany(mappedBy = "course")  // Match property in UserCourse
-    private final Set<User> user = new HashSet<>(); // Relationship with UserCourse
+    @ManyToMany(mappedBy = "course")
+    private final Set<User> user = new HashSet<>();
 
+    @SuppressWarnings("unused")
     @JsonIgnore
     @OneToMany(mappedBy = "course")
     private final Set<Booking> roomCourse = new HashSet<>();
 
-/*     @ManyToMany(mappedBy = "course")  // Match property in RoomCourse
-    private RoomCourse roomCourse; // Relationship with RoomCourse */
 
     // Default constructor
     public Course() {}
 
+    /**
+     * Full Constructor
+     * 
+     * @param courseName The name of the course
+     */
     public Course(String courseName) {
         this.courseName = courseName;
     }
 
-    // Getters and setters
+
+    /**
+     * Getter for course id
+     * 
+     * @return  The instance course id
+     */
     public UUID getId() {
         return course_id;
     }
 
+    /**
+     * Setter for course name
+     * 
+     * @param courseName    The new course name
+     */
     public void setCourseName(String courseName) {
         this.courseName = courseName;
     }
 
-    public String getName() {
+    /**
+     *  Getter for course name
+     * 
+     * @return The instance course name
+     */
+    public String getCourseName() {
         return courseName;
     }
 }

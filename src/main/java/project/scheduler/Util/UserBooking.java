@@ -5,6 +5,9 @@ import java.util.UUID;
 
 
 
+/**
+ * A class responsible for transmitting booking ids and conflicts
+ */
 public class UserBooking {
     ArrayList<UUID> room_conflicts;
     ArrayList<UUID> time_conflicts;

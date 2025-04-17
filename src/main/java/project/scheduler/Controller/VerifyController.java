@@ -39,13 +39,13 @@ public class VerifyController {
     if(user == null) {
       return ResponseEntity.ok(null);
     }
-    if(permissionService.validPassword(email, password)) {
+    if(permissionService.validPassword(password, user.getPassword())) {
       permissionService.cullTokens();
       tokens = permissionService.findTokenByUser(user.getUserId());
       if(tokens.length == 0) {
         return permissionService.setToken(user);
       }
-      return permissionService.refreshToken(user.getUserId(), tokens);
+      return ResponseEntity.ok(new UserToken(tokens, user.getUserId(), true));
     }
     try {
       Thread.sleep(1000);         // Server waits one second before returning a negative result

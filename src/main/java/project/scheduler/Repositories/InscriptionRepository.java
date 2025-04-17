@@ -20,8 +20,8 @@ public interface InscriptionRepository extends CrudRepository<Inscription, Inscr
     /**
      * Checks if a user is inscribed into a given course
      * 
-     * @param user_id   The id of the user in question - ID is a HEX number in the format of (DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD)
-     * @param course_id The id of the course in question - ID is a HEX number in the format of (DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD)
+     * @param user_id   The id of the user in question as a UUID object
+     * @param course_id The id of the course in question as a UUID object
      * 
      * @return  An integer representation of the result. 1 if the entry exists, 0 if not
      */
@@ -31,8 +31,8 @@ public interface InscriptionRepository extends CrudRepository<Inscription, Inscr
     /**
      * Deletes an isncription based on the user id and course id
      * 
-     * @param user_id   The id of the user in question - ID is a HEX number in the format of (DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD)
-     * @param course_id The id of the course in question - ID is a HEX number in the format of (DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD)
+     * @param user_id   The id of the user in question as a UUID object
+     * @param course_id The id of the course in question as a UUID object
      * 
      * @return  An integer representation of the result. 1 if the entry was deleted, 0 if not
      */
@@ -43,8 +43,8 @@ public interface InscriptionRepository extends CrudRepository<Inscription, Inscr
     /**
      * Selects all bookings which are in conflict with the given user in the given course (Courses the user is also inscribed in which take place at the same time as the given one)
      * 
-     * @param user_id   The id of the user in question - ID is a HEX number in the format of (DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD)
-     * @param course_id The id of the course in question - ID is a HEX number in the format of (DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD)
+     * @param user_id   The id of the user in question as a UUID object
+     * @param course_id The id of the course in question as a UUID object
      * 
      * @return  An Iterable containing all bookings which are conflicting
      */

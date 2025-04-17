@@ -50,7 +50,7 @@ public interface UserRepository extends CrudRepository<User, UUID> {
      * Updates a user's password
      * 
      * @param password  The new password
-     * @param user_id   The id of the user in question - ID is a HEX number in the format of (DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD)
+     * @param user_id   The id of the user in question as a UUID object
      */
     @Modifying
     @NativeQuery(value = "UPDATE users u SET password = ?1 WHERE u.user_id = ?2")
@@ -65,4 +65,14 @@ public interface UserRepository extends CrudRepository<User, UUID> {
      */
     @NativeQuery(value = "SELECT * FROM tokens t, users u WHERE t.token = ?1 AND t.t_user_id = u.user_id")
     User findUserByToken(String token);
+
+    /**
+     * Checks if the given email address is already present
+     * 
+     * @param email The email address to be checked
+     * 
+     * @return  An integer representation of the result. 1 if it exists, 0 if not
+     */
+    @NativeQuery(value = "SELECT EXISTS (SELECT 1 FROM users u WHERE u.email = ?1)")
+    Integer checkByEmail(String email);
 }

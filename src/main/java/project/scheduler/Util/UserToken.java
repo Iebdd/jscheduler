@@ -6,6 +6,9 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+/**
+ * A class responsible for transmitting new and existing tokens and prompting for validation
+ */
 public class UserToken extends Object{
     private String[] tokens;
     private UUID userId;
@@ -34,6 +37,10 @@ public class UserToken extends Object{
     public String[] getTokens() {
         return this.tokens;
     }
+
+    public UUID getUserId() {
+        return userId;
+    }
     
     @JsonIgnore
     public String getFirstToken() {
@@ -44,16 +51,15 @@ public class UserToken extends Object{
         return this.check;
     }
 
-    public boolean getCheck() {
-        return this.check;
-    }
-
+    /**
+     * Creates a new token
+     * 
+     * @param token_length  The length of the new token
+     * 
+     * @return  A String representation of the new token
+     */
     private String createToken(int token_length) {
         RandomStringUtils tok_gen = RandomStringUtils.secure();
         return tok_gen.next(token_length, true, true);
-    }
-
-    public UUID getUserId() {
-        return userId;
     }
 }

@@ -26,7 +26,7 @@ public class BookingService {
     private BookingRepository bookingRepository;
 
     /**
-     * An enum representing the possible stati of a booking
+     * An enum representing the possible status a booking can have
      */
     public enum Status {
         Set(0),
@@ -45,13 +45,13 @@ public class BookingService {
     }
 
     /**
-     * Sets a booking and confirms possible conflicts
+     * Sets a booking or confirms possible conflicts
      * 
-     * @param course    
-     * @param room
-     * @param start
-     * @param end
-     * @param status
+     * @param course    The Course object to be booked
+     * @param room      The Room object to be booked
+     * @param start     The start time as an Instant object
+     * @param end       The end time as an Instant object
+     * @param status    The status of the booking as a Status enum
      * 
      * @return
      */
@@ -85,14 +85,36 @@ public class BookingService {
         return ResponseEntity.ok(new UserBooking(new_id));
     }
 
+    /**
+     * Changes the Status of a booking
+     * 
+     * @param status    The new status of the booking as Status enum
+     * @param course_id The ID of the course as a UUID object
+     * 
+     * @return  An Integer representation of the changed entries. 1 measn the entry was updated, 0 means it was not
+     */
     public ResponseEntity<Integer> updateBookingStatus(Status status, UUID course_id) {
         return ResponseEntity.ok(bookingRepository.updateStatus(status, course_id));
     }
 
+    /**
+     *  Finds a booking based on the passed booking id
+     * 
+     * @param booking_id    The id of the booking in question as a UUID object
+     * 
+     * @return  A Booking object representing the entry found if present
+     */
     public Booking findBookingById(UUID booking_id) {
         return bookingRepository.findById(booking_id).orElse(null);
     }
 
+  /**
+   *  Endpoint to remove a booking (A course taking place in a room with a set start and end date)
+   * 
+   * @param booking_id  The id of the course to be removed as a UUID object
+
+   * @return  An integer representation of the result. 1 means the booking was removed successfully / 0 means it wasn't and nothing has changed (Invalid booking_id)
+   */
     public Integer removeBookingById(UUID booking_id) {
         return bookingRepository.removeById(booking_id);
     }

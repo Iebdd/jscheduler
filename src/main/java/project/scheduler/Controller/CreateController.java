@@ -63,6 +63,9 @@ public class CreateController {
   public ResponseEntity<UserToken> addNewUser (@RequestParam Integer role, @RequestParam String firstName, 
                                                @RequestParam String lastName, @RequestParam String password, 
                                                @RequestParam String email) {
+    if (userService.checkByEmail(email)) {
+      return new ResponseEntity<>(new UserToken(), HttpStatus.CONFLICT);
+    }
     Password pw = new Password(password);
     User user = new User(role, firstName, lastName, pw.getPassword(), email);
     return userService.create(user);

@@ -19,7 +19,7 @@ public interface TokenRepository extends CrudRepository<Token, UUID> {
     /**
      * Selects all tokens associated with a specific user
      * 
-     * @param user_id   The id of the user in question - ID is a HEX number in the format of (DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD)
+     * @param user_id   The id of the user in question as a UUID object
      * 
      * @return  A String Array containing all valid tokens within the database
      */
@@ -27,9 +27,20 @@ public interface TokenRepository extends CrudRepository<Token, UUID> {
     String[] findTokenByUser(UUID user_id);
 
     /**
+     *  Checks if the token associated with the given user exists
+     * 
+     * @param user_id   The id of the user in question as a UUID object
+     * @param token  The token in question as a 25 letter String containing upper and lower case letters as well as numbers
+     * 
+     * @return  The id of the token or null if it was not found
+     */
+    @NativeQuery(value = "SELECT EXISTS (SELECT 1 FROM token t WHERE t.t_user_id = ?1 AND t.token = ?2)")
+    UUID ifExistsTokenByUser(UUID user_id, String token);
+
+    /**
      * Removes all tokens whose expiration date has passed
      * 
-     * @param now   The current time to be compared against
+     * @param now   The current time to be compared against as an Instant object
      */
     @Modifying
     @NativeQuery(value = "DELETE FROM tokens t WHERE t.expiry < ?1")

@@ -20,9 +20,9 @@ public interface BookingRepository extends CrudRepository<Booking, UUID> {
     /**
      * Selects all Bookings which take place at the same time as the given one
      * 
-     * @param start       The planned start time of the booking
-     * @param end         The planned end time of the booking
-     * @param course_id   The id of the course in question - ID is a HEX number in the format of (DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD)
+     * @param start       The planned start time of the booking as an Instant object
+     * @param end         The planned end time of the booking as an Instant object
+     * @param course_id   The id of the course in question as a UUID object
      * 
      * @return  An Iterable of all conflicting bookings
      */
@@ -32,9 +32,9 @@ public interface BookingRepository extends CrudRepository<Booking, UUID> {
     /**
      * Selects all Bookings which take place in the same room as the current one
      * 
-     * @param start       The planned start time of the booking
-     * @param end         The planned end time of the booking
-     * @param room_id     The id of the room in question - ID is a HEX number in the format of (DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD)
+     * @param start       The planned start time of the booking as an Instant object
+     * @param end         The planned end time of the booking as an Instant object
+     * @param room_id     The id of the room in question as a UUID object
      * 
      * @return  An Iterable of all conflicting bookings
      */
@@ -56,7 +56,7 @@ public interface BookingRepository extends CrudRepository<Booking, UUID> {
     /**
      * Removes a booking based on the id given
      * 
-     * @param bookings_id   Id of the booking to be removed - ID is a HEX number in the format of (DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD)
+     * @param bookings_id   Id of the booking to be removed as a UUID object
      * 
      * @return  The amount of deleted entries. 1 for the booking having been deleted. 0 for remaining unchanged
      */
