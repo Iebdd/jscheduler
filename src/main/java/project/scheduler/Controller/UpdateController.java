@@ -5,7 +5,6 @@ import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -43,7 +42,7 @@ public class UpdateController {
    * 
    * @return  A String informing of the success or failure of the request
    */
-  @PostMapping(path="/password")
+  @PatchMapping(path="/password")
   public ResponseEntity<String> setPasswordById(@RequestParam String old_password, @RequestParam String new_password, @RequestParam UUID user_id) {
       User new_user = userService.findUserById(user_id).orElse(null);
       if (new_user == null || !Password.compare(old_password, new_user.getPassword())) {
@@ -98,6 +97,15 @@ public class UpdateController {
     return bookingService.updateBookingStatus(new_status, booking_id);
   }
 
+  /**
+   * Refreshes the expiry date of a token
+   * 
+   * @param user_id The id of the user the token is associated with
+   * @param header       A Bearer Token containing an authentication token (Authorization: Bearer {token}) Token contains {@value PermissionService#TOKEN_LENGTH} upper or lower case letters, or numbers <p>
+   *                     Requires the token to be associated with the passed user
+   * 
+   * @return  True if the token was refreshed successfully, false if not
+   */
   @PatchMapping(path="/token")
   public ResponseEntity<Boolean> refreshToken(@RequestParam UUID user_id, @RequestHeader("Authorization") String header) {
     String token = permissionService.validAuthHeader(header);

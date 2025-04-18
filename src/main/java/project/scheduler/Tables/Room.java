@@ -24,7 +24,7 @@ public class Room {
   private UUID room_id;
   private final LocalTime start = LocalTime.of(7, 0, 0, 0);
   private final LocalTime end = LocalTime.of(20, 0, 0, 0);
-  private String roomName;
+  private String room_name;
 
   @SuppressWarnings("unused")
   @JsonIgnore
@@ -42,7 +42,7 @@ public class Room {
    * @param roomName  The instance room name
    */
   public Room(String roomName) {
-    this.roomName = roomName;
+    this.room_name = roomName;
   }
 
   /**
@@ -60,7 +60,7 @@ public class Room {
    * @return  The instance room name
    */
   public String getRoomName() {
-    return this.roomName;
+    return this.room_name;
   }
 
   /**
@@ -69,7 +69,7 @@ public class Room {
    * @param roomName  The room name to be set
    */
   public void setRoomName(String roomName) {
-    this.roomName = roomName;
+    this.room_name = roomName;
   }
 
   /**

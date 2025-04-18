@@ -64,7 +64,7 @@ public class ReadController {
    * 
    * @return  The id corresponding to the room name
    */
-  @GetMapping(path="/roomName/{name}") 
+  @GetMapping(path="/room/{name}") 
   public ResponseEntity<String> getRoomIdByName(@PathVariable String name) {
     return ResponseEntity.ok(roomService.findRoomByName(name).getId().toString());
   }
@@ -76,7 +76,7 @@ public class ReadController {
    * 
    * @return  The id corresponding to the course name
    */
-  @GetMapping(path="/courseName/{name}") 
+  @GetMapping(path="/course/{name}") 
   public ResponseEntity<String> getCourseIdByName(@PathVariable String name) {
     return ResponseEntity.ok(courseService.findCourseByName(name).getId().toString());
   }
