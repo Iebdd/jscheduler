@@ -1,5 +1,5 @@
 {
-  "name": "scheduler-frontend",
+  "name": "scheduler_frontend",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",

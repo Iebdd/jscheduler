@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +33,7 @@ import project.scheduler.Util.UserToken;
  * Controller class responsible for creating new entities within the database
  */
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping(path="/add")
 public class CreateController {
 

@@ -1,7 +1,11 @@
 package project.scheduler.Controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,12 +14,14 @@ import jakarta.inject.Inject;
 import project.scheduler.Services.PermissionService;
 import project.scheduler.Services.UserService;
 import project.scheduler.Tables.User;
+import project.scheduler.Util.PublicUser;
 import project.scheduler.Util.UserToken;
 
 /**
  * Controller class responsible for removing entities from the database
  */
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping(path="/verify")
 public class VerifyController {
   @Inject
@@ -53,5 +59,20 @@ public class VerifyController {
       Thread.currentThread().interrupt();
     }
     return ResponseEntity.ok(null);
+  }
+
+  @GetMapping(path="/token")
+  public ResponseEntity<PublicUser> verifyToken(@RequestHeader("Authorization") String header) {
+    String token = permissionService.validAuthHeader(header);
+    if(token.length() == 0) {
+      return new ResponseEntity<>(new PublicUser(), HttpStatus.UNAUTHORIZED);
+    }
+    User user = userService.findUserByToken(token);
+    if(user == null) {
+      return new ResponseEntity<>(new PublicUser(), HttpStatus.UNAUTHORIZED);
+    } else {
+      System.out.println(user.getUserId());
+      return ResponseEntity.ok(new PublicUser(user));
+    }
   }
 }

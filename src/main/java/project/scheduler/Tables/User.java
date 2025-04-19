@@ -94,7 +94,7 @@ public class User {
   }
 
   /**
-   * Gette for first name
+   * Getter for first name
    * 
    * @return  The instance first name
    */

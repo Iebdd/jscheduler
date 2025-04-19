@@ -1,5 +1,6 @@
 package project.scheduler.Services;
 
+import java.time.LocalTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -60,5 +61,27 @@ public class RoomService {
      */
     public Room findRoomByName(String name) {
         return roomRepository.findByRoomName(name);
+    }
+
+    /**
+     *  Finds the start time of a room
+     * 
+     * @param room_id   The id of the room in question
+     * 
+     * @return  The start time of the room
+     */
+    public LocalTime findStartByRoomId(UUID room_id) {
+        return roomRepository.findStartById(room_id);
+    }
+
+    /**
+     *  Finds the end time of a room
+     * 
+     * @param room_id   The id fo the room in question
+     * 
+     * @return  The end time of the room
+     */
+    public LocalTime findEndByRoomId(UUID room_id) {
+        return roomRepository.findEndById(room_id);
     }
 }

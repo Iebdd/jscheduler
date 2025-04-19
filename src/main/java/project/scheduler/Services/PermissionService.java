@@ -34,6 +34,9 @@ public class PermissionService {
 
     /**
      * An enum representing the possible levels of permissions
+     * 
+     * I could imagine that it would make more sense to use the database permission system 
+     * but I didn't have time for that anymore
      */
     public enum Permissions {
         Student(0),

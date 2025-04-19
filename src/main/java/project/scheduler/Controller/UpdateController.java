@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +24,7 @@ import project.scheduler.Util.Password;
  * Controller class responsible for removing entities from the database
  */
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping(path="/update")
 public class UpdateController {
 
@@ -42,7 +44,7 @@ public class UpdateController {
    * 
    * @return  A String informing of the success or failure of the request
    */
-  @PatchMapping(path="/password")
+  @PatchMapping(path="/password/verify")
   public ResponseEntity<String> setPasswordById(@RequestParam String old_password, @RequestParam String new_password, @RequestParam UUID user_id) {
       User new_user = userService.findUserById(user_id).orElse(null);
       if (new_user == null || !Password.compare(old_password, new_user.getPassword())) {
@@ -62,7 +64,7 @@ public class UpdateController {
    * 
    * @return  A String informing of the success or failure of the request
    */
-  @PatchMapping(path="/password")
+  @PatchMapping(path="/password/token")
   public ResponseEntity<String> setPasswordByToken(@RequestParam String new_password, @RequestParam UUID user_id, @RequestHeader("Authorization") String header) {
     String token = permissionService.validAuthHeader(header);
     if(token.length() == 0) {

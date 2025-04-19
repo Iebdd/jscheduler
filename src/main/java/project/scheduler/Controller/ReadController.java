@@ -1,10 +1,13 @@
 package project.scheduler.Controller;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -26,6 +29,7 @@ import project.scheduler.Tables.Room;
  * Controller class responsible for removing entities from the database
  */
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping(path="/read")
 public class ReadController {
   @Inject
@@ -43,7 +47,7 @@ public class ReadController {
    * @return  An Iterable of all rooms
    */
   @GetMapping(path="/rooms")
-  public ResponseEntity<Iterable<Room>> getRooms() {
+  public ResponseEntity<Iterable<Room>> getAllRooms() {
     return roomService.findAllRooms();
   }
 
@@ -82,6 +86,34 @@ public class ReadController {
   }
 
   /**
+   * Returns all courses taking place in a given room
+   * 
+   * @param room_id The id of the room in question
+   * 
+   * @return  An Iterable of all Bookings within the room
+   */
+  @GetMapping(path="/roomBookings/{room_id}")
+  public ResponseEntity<Iterable<Booking>> getBookedCourses(@PathVariable UUID room_id) {
+    return bookingService.findAllBookingsByRoom(room_id);
+  }
+
+  /**
+   *  Returns all course taking place in a given room on a given day
+   * 
+   * @param room_id The id of the room in question
+   * @param date    The day in question
+   * 
+   * @return  An Iterable of all Bookings within the room on that day
+   */
+  @GetMapping(path="/roomBookings/{room_id}/{date}")
+  public ResponseEntity<Iterable<Booking>> getBookedCoursesByDay(@PathVariable UUID room_id, @PathVariable LocalDate date) {
+    LocalDateTime start_day = LocalDateTime.of(date, roomService.findStartByRoomId(room_id));
+    LocalDateTime end_day = LocalDateTime.of(date, roomService.findEndByRoomId(room_id));
+    System.out.println(start_day);
+    return bookingService.findAllBookingsByRoomByDay(room_id, start_day, end_day);
+  }
+
+  /**
    * Returns all courses the passed user is currently enrolled in
    * 
    * @param user_id The id of the user to be queried - ID is a HEX number in the format of (DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDDDD)
@@ -100,6 +132,18 @@ public class ReadController {
       return new ResponseEntity<>(new LinkedMultiValueMap<>(), HttpStatus.UNAUTHORIZED);
     }
     return bookingService.findAllBookingsByUser(user_id);
+  }
+
+  @GetMapping(path="/bookings")
+  public ResponseEntity<Iterable<Booking>> getBookings(@RequestHeader("Authorization") String header) {
+    String token = permissionService.validAuthHeader(header);
+    if(token.length() == 0) {
+      return new ResponseEntity<>(new LinkedMultiValueMap<>(), HttpStatus.UNAUTHORIZED);
+    }
+    if(!permissionService.validRole(token, Permissions.Assistant)) {
+      return new ResponseEntity<>(new LinkedMultiValueMap<>(), HttpStatus.UNAUTHORIZED);
+    }
+    return bookingService.getAllBookings();
   }
 
 }

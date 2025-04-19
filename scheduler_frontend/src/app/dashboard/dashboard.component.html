@@ -1,0 +1,14 @@
+<app-info-bar></app-info-bar>
+<app-main-body></app-main-body>
+<app-top-bar></app-top-bar>
+
+<div>User ID: {{_active_user.userId}}</div> <br>
+@for(room of _rooms; track room.id) {
+    <div>Room: {{room.id}}</div>
+}
+@for(course of _courses; track course.id) {
+    <div>Course: {{course.id}}</div>
+}
+@for(booking of _bookings; track booking.bookings_id) {
+    <div>Booking: {{booking.bookings_id}}</div>
+}

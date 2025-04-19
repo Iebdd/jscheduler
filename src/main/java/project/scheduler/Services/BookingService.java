@@ -1,6 +1,7 @@
 package project.scheduler.Services;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -108,18 +109,53 @@ public class BookingService {
         return bookingRepository.findById(booking_id).orElse(null);
     }
 
-  /**
-   *  Endpoint to remove a booking (A course taking place in a room with a set start and end date)
-   * 
-   * @param booking_id  The id of the course to be removed as a UUID object
+    /**
+     *  Removes a given booking (A course taking place in a room with a set start and end date)
+     * 
+     * @param booking_id  The id of the course to be removed as a UUID object
 
-   * @return  An integer representation of the result. 1 means the booking was removed successfully / 0 means it wasn't and nothing has changed (Invalid booking_id)
-   */
+    * @return  An integer representation of the result. 1 means the booking was removed successfully / 0 means it wasn't and nothing has changed (Invalid booking_id)
+    */
     public Integer removeBookingById(UUID booking_id) {
         return bookingRepository.removeById(booking_id);
     }
 
+    /**
+     *  Returns all bookings for courses a given user is inscribed into
+     * 
+     * @param user_id   The id of the user in question
+     * 
+     * @return  An Iterable of all bookings the user is part of
+     */
     public ResponseEntity<Iterable<Booking>> findAllBookingsByUser(UUID user_id) {
         return ResponseEntity.ok(bookingRepository.findAllByUserId(user_id));
+    }
+
+    /**
+     *  Returns all bookings that take place in a given room
+     * 
+     * @param room_id   The id of the room in question
+     * 
+     * @return  An Iterable of all bookings in the given room
+     */
+    public ResponseEntity<Iterable<Booking>> findAllBookingsByRoom(UUID room_id) {
+        return ResponseEntity.ok(bookingRepository.findAllByRoomId(room_id));
+    }
+
+    /**
+     *  Returns all courses taking place in a given room on a given day
+     * 
+     * @param room_id   The id of the room in question
+     * @param start     The earliest courses can take place that day
+     * @param end       The latest courses can take place that day
+     * 
+     * @return  An Iterable containing all Booking in that room on that day
+     */
+    public ResponseEntity<Iterable<Booking>> findAllBookingsByRoomByDay(UUID room_id, LocalDateTime start, LocalDateTime end) {
+        return ResponseEntity.ok(bookingRepository.findAllByRoomIdAndDate(room_id, start, end));
+    }
+
+    public ResponseEntity<Iterable<Booking>> getAllBookings() {
+        return ResponseEntity.ok(bookingRepository.findAll());
     }
 }

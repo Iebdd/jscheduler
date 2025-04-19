@@ -170,7 +170,7 @@ public class MockDataService {
             map.add("token", token);
             sendPost(URI + "/add/course", token, map, Course.class);
             map.clear();
-            courses_obj.add(sendGet(URI + "/read/courseName/" + course.getCourseName(), String.class));
+            courses_obj.add(sendGet(URI + "/read/course/" + course.getCourseName(), String.class));
         }
     }
 
@@ -185,7 +185,7 @@ public class MockDataService {
             map.add("roomName", room.getRoomName());
             sendPost(URI + "/add/room", token, map, Room.class);
             map.clear();
-            rooms_obj.add(sendGet(URI + "/read/roomName/" + room.getRoomName(), String.class));
+            rooms_obj.add(sendGet(URI + "/read/room/" + room.getRoomName(), String.class));
         }
     }
 

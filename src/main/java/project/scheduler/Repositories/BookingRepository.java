@@ -1,6 +1,7 @@
 package project.scheduler.Repositories;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.Modifying;
@@ -73,4 +74,28 @@ public interface BookingRepository extends CrudRepository<Booking, UUID> {
      */
     @NativeQuery(value = "SELECT * FROM (SELECT * FROM inscriptions i WHERE i.i_user_id = ?1) i, bookings b WHERE i.i_course_id = b.b_course_id") 
     Iterable<Booking> findAllByUserId(UUID user_id);
+
+    /**
+     *  Selects alls courses which take place in the given room
+     * 
+     * @param room_id   The id of the room in question
+     * 
+     * @return  An Iterable of all courses taking place in this room
+     */
+    @NativeQuery(value = "SELECT * FROM bookings b WHERE b.b_room_id = ?1")
+    Iterable<Booking> findAllByRoomId(UUID room_id);
+
+    /**
+     *  Selects all courses happening in a given room on a given day
+     * 
+     * @param room_id   The id of the room in question
+     * @param start     The earliest time on the given day
+     * @param end       The latest time on the given day
+     * 
+     * @return  An Iterable containing all rooms happening in the given room on the given day
+     */
+    @NativeQuery(value = "SELECT room_id FROM bookings b WHERE b.b_room_id = ?1 AND b.start >= ?2 AND b.end <= ?3")
+    Iterable<Booking> findAllByRoomIdAndDate(UUID room_id, LocalDateTime start, LocalDateTime end);
+
+
 }

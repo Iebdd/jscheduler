@@ -72,4 +72,15 @@ public class UserService {
     public Boolean checkByEmail(String email) {
         return (userRepository.checkByEmail(email) == 1);
     }
+
+    /**
+     * Finds a user by an associated token
+     * 
+     * @param token The token to find the user by
+     * 
+     * @return  A User object representing the entry or null if it wasn't found
+     */
+    public User findUserByToken(String token) {
+        return userRepository.findUserByToken(token);
+    }
 }

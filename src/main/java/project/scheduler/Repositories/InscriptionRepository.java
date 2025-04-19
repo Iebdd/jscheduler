@@ -29,7 +29,7 @@ public interface InscriptionRepository extends CrudRepository<Inscription, Inscr
     long ifExists(UUID user_id, UUID course_id);
 
     /**
-     * Deletes an isncription based on the user id and course id
+     * Deletes an inscription based on the user id and course id
      * 
      * @param user_id   The id of the user in question as a UUID object
      * @param course_id The id of the course in question as a UUID object

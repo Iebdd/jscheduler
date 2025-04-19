@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { InfoBarComponent } from './info-bar.component';
+import { MainBodyComponent } from '../dashboard/main-body/main-body.component';
 
-describe('InfoBarComponent', () => {
-  let component: InfoBarComponent;
-  let fixture: ComponentFixture<InfoBarComponent>;
+describe('MainBodyComponent', () => {
+  let component: MainBodyComponent;
+  let fixture: ComponentFixture<MainBodyComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [InfoBarComponent]
+      imports: [MainBodyComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(InfoBarComponent);
+    fixture = TestBed.createComponent(MainBodyComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
