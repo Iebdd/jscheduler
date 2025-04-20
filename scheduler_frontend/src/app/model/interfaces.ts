@@ -27,25 +27,25 @@ export interface User {
     userId:    string;
 }
 
-export interface Course {
-    id: string;
-    courseName: string;
+export interface Booking {
+  room:   Room;
+  course: Course;
+  start:  Date;
+  end:    Date;
+  status: string;
+  id:     string;
 }
 
-export interface Booking {
-    bookings_id: string;
-    room: Room;
-    course: Course;
-    start: string;
-    end: string;
-    status: Status;
+export interface Course {
+  courseName: string;
+  id:         string;
 }
 
 export interface Room {
-    id: string;
-    start: string;
-    end: string;
-    roomName: string;
+  start:    string;
+  end:      string;
+  id:       string;
+  roomName: string;
 }
 
 export interface Inscription {

@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,7 +44,7 @@ public class VerifyController {
     String[] tokens;
     User user = userService.findUserByEmail(email);
     if(user == null) {
-      return ResponseEntity.ok(null);
+      return new ResponseEntity<>(new UserToken(), HttpStatus.UNAUTHORIZED);
     }
     if(permissionService.validPassword(password, user.getPassword())) {
       permissionService.cullTokens();
@@ -61,6 +62,13 @@ public class VerifyController {
     return ResponseEntity.ok(null);
   }
 
+  /**
+   * Checks if passed token is present
+   * 
+   * @param header  A Bearer Token containing the authentication token (Authorization: Bearer {token}) Token contains {@value PermissionService#TOKEN_LENGTH} upper or lower case letters, or numbers <p>
+   * 
+   * @return  A PublicUser object is the token exists in the database
+   */
   @GetMapping(path="/token")
   public ResponseEntity<PublicUser> verifyToken(@RequestHeader("Authorization") String header) {
     String token = permissionService.validAuthHeader(header);
@@ -74,5 +82,17 @@ public class VerifyController {
       System.out.println(user.getUserId());
       return ResponseEntity.ok(new PublicUser(user));
     }
+  }
+
+  /**
+   *  Checks if passed email address is also associated with a user
+   * 
+   * @param email The email address to be checked
+   * 
+   * @return  True if the email already exists, false if not
+   */
+  @GetMapping(path="/available/email/{email}")
+  public ResponseEntity<Boolean> verifyEmail(@PathVariable String email) {
+    return ResponseEntity.ok(userService.checkByEmail(email));
   }
 }

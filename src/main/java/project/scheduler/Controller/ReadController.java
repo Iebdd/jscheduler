@@ -109,7 +109,6 @@ public class ReadController {
   public ResponseEntity<Iterable<Booking>> getBookedCoursesByDay(@PathVariable UUID room_id, @PathVariable LocalDate date) {
     LocalDateTime start_day = LocalDateTime.of(date, roomService.findStartByRoomId(room_id));
     LocalDateTime end_day = LocalDateTime.of(date, roomService.findEndByRoomId(room_id));
-    System.out.println(start_day);
     return bookingService.findAllBookingsByRoomByDay(room_id, start_day, end_day);
   }
 

@@ -1,1 +1,67 @@
-<p>login works!</p>
+<div class="grid_container">
+    <div class="wrapper">
+        <div class="title-text">
+            @if (_state == _states.Login) {
+                <div class="title login">
+                    Sign in
+                </div>
+            } @else {
+                <div class="title signup">
+                    Sign up
+                </div>
+            }
+        </div>
+        <!-- Adapted from this template: https://www.codingnepalweb.com/login-and-registration-form-in-html/ -->
+        <div class="form-container">
+            <div class="slide-controls">
+                <input type="radio" name="slide" id="login" checked (click)="setLoginState(0)">
+                <input type="radio" name="slide" id="signup" (click)="setLoginState(1)">
+                <label for="login" class="slide login">Login</label>
+                <label for="signup" class="slide signup">Sign up</label>
+                <div class="slider-tab"></div>
+            </div>
+            <div class="form-inner">
+                @if (_state == _states.Login) {
+                    <form action="#" class="login">
+                        <div class="field">
+                            <input name="emailLogin" [(ngModel)]="_login_email" type="email" placeholder="Email Address" required>
+                        </div>
+                        <div class="field">
+                            <input name="passwordLogin" [(ngModel)]="_login_password" type="password" placeholder="Password" required>
+                        </div>
+                        <div>
+                            <input name="remember" [(ngModel)]="_remember" type="checkbox">
+                            Remember me
+                        </div>
+                        <div  class="field btn">
+                            <div  class="btn-layer"></div>
+                            <input (click)="signIn()"  type="submit" value="Login">
+                        </div>
+                    </form>
+                } @else if (_state == _states.Register) {
+                    <form action="#" class="signup">
+                        <div class="field">
+                            <input name="fNameRegister" [(ngModel)]="_register_firstName" type="text" placeholder="First Name (*)" required>
+                        </div>
+                        <div class="field">
+                            <input name="lNameRegister" [(ngModel)]="_register_lastName" type="text" placeholder="Last Name (*)" required>
+                        </div>
+                        <div class="email field">
+                            <input name="emailRegister" (input)="newEmailEvent($event)" [(ngModel)]="_register_email" type="email" placeholder="Email Address (*)" required>
+                        </div>
+                        <div class="field">
+                            <input name="passwordRegister" [(ngModel)]="_register_password" type="password" placeholder="Password (*)" required>
+                        </div>
+                        <div class="field btn">
+                            <div class="btn-layer"></div>
+                            <input (click)="signUp()" type="submit" value="Signup" >
+                        </div>
+                    </form>
+                }
+            </div>
+        </div>
+        @if(_login_status != "") {
+            <div [style.color]="setStatusColor()" class="status">{{_login_status}}</div>
+        }
+    </div>
+</div>

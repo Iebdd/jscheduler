@@ -15,7 +15,6 @@ import { TopBarComponent } from "./top-bar/top-bar.component";
 export class DashboardComponent implements OnInit {
 
   private _userService: UserService = inject(UserService);
-  private _destroyed = new Subject<void>;
 
   protected _active_user: User = {
     userId: '',
@@ -39,25 +38,21 @@ export class DashboardComponent implements OnInit {
 
   getUserData(): void {
     this._userService.getUserData()
-      .pipe(takeUntil(this._destroyed))
       .subscribe(userData => this._active_user = userData);
   }
 
   getCourses(): void {
     this._userService.getCourses()
-      .pipe(takeUntil(this._destroyed))
       .subscribe(courses => this._courses = courses);
   }
 
   getRooms(): void {
     this._userService.getRooms()
-      .pipe(takeUntil(this._destroyed))
       .subscribe(rooms => this._rooms = rooms);
   }
 
   getBookings(): void {
     this._userService.getBookings()
-      .pipe(takeUntil(this._destroyed))
       .subscribe(bookings => this._bookings = bookings);
   }
 

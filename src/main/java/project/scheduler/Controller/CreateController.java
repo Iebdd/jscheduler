@@ -62,15 +62,41 @@ public class CreateController {
    * @return  A UserToken object, containing a token associated with the new user (To be saved locally)
    */
   @PostMapping(path="/user")
-  public ResponseEntity<UserToken> addNewUser (@RequestParam Integer role, @RequestParam String firstName, 
+  public ResponseEntity<UserToken> addNewUser (@RequestParam String role, @RequestParam String firstName, 
                                                @RequestParam String lastName, @RequestParam String password, 
                                                @RequestParam String email) {
     if (userService.checkByEmail(email)) {
       return new ResponseEntity<>(new UserToken(), HttpStatus.CONFLICT);
     }
     Password pw = new Password(password);
-    User user = new User(role, firstName, lastName, pw.getPassword(), email);
+    User user = new User(Integer.valueOf(role), firstName, lastName, pw.getPassword(), email);
     return userService.create(user);
+  }
+
+  /**
+   *  Endpoint to request a new token (If the server stores a token which isn't available locally)
+   * 
+   * @param email     The email of the user in question
+   * @param password  The password of the user in question
+   * 
+   * @return  A UserToken object containing a newly created token
+   */
+  @PostMapping(path="/token")
+  public ResponseEntity<UserToken> addToken(@RequestParam String email, @RequestParam String password) {
+    User user = userService.findUserByEmail(email);
+    if(user == null) {
+      return new ResponseEntity<>(new UserToken(), HttpStatus.UNAUTHORIZED);
+    }
+    if(permissionService.validPassword(password, user.getPassword())) {
+      permissionService.cullTokens();
+      return permissionService.setToken(user);
+    }
+    try {
+      Thread.sleep(1000);         // Server waits one second before returning a negative result
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+    }
+    return new ResponseEntity<>(new UserToken(), HttpStatus.UNAUTHORIZED);
   }
 
   /**
@@ -94,6 +120,8 @@ public class CreateController {
       return new ResponseEntity<>(new Course(), HttpStatus.UNAUTHORIZED);
     }
   }
+
+
 
   /**
    * Endpoint to create a new room

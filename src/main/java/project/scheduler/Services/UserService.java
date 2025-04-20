@@ -36,7 +36,7 @@ public class UserService {
         userRepository.save(user);
         return permissionService.setToken(user);
         } catch (DataIntegrityViolationException e) {
-        return new ResponseEntity<>(new UserToken(), HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(new UserToken(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 

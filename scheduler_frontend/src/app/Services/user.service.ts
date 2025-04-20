@@ -1,22 +1,24 @@
 import { inject, Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { Booking, Course, Room, User } from '../model/interfaces';
+import { Booking, Course, Room, User, UserToken } from '../model/interfaces';
 import { LoadDataService } from './load-data.service';
 import { LocalService } from './local.service';
+import { Parse } from '../model/parse';
 import { Router } from '@angular/router';
+import { StatusService } from './status.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class UserService implements OnDestroy {
+export class UserService {
 
   constructor() {}
 
   private loadDataService: LoadDataService = inject(LoadDataService);
   private localService: LocalService = inject(LocalService);
   private router: Router =  inject(Router);
+  private statusService: StatusService = inject(StatusService);
 
-  private destroyed = new Subject<void>;
   private _userData = new BehaviorSubject<User>(
     {
       userId: '',
@@ -68,6 +70,7 @@ export class UserService implements OnDestroy {
     .subscribe({
       next: (value) => {
         if(value.body != null) {
+          this.statusService.setLoadingStatus("Done");
           this.setCourses(JSON.parse(JSON.stringify(value.body)));
         }
       }
@@ -79,7 +82,7 @@ export class UserService implements OnDestroy {
     .subscribe({
       next: (value) => {
         if(value.body != null) {
-            console.log(value.body);
+            this.statusService.setLoadingStatus("Done");
             this.setRooms(JSON.parse(JSON.stringify(value.body)));
         }
       }
@@ -91,6 +94,7 @@ export class UserService implements OnDestroy {
       .subscribe({
         next: (value) => {
           if(value.body != null) {
+            this.statusService.setLoadingStatus("Done");
             this.setBookings(JSON.parse(JSON.stringify(value.body)));
             this.router.navigate(['/dashboard']);
           }
@@ -103,7 +107,9 @@ export class UserService implements OnDestroy {
       .subscribe({
         next: (value) => {
           if(value.body != null) {
-            this.setBookings(JSON.parse(JSON.stringify(value.body)));
+            this.statusService.setLoadingStatus("Done");
+            this.setBookings(Parse.toBooking(JSON.stringify(value.body)));
+            this.statusService.setLoadingStatus("Data loaded. Redirecting to dashboard");
             this.router.navigate(['/dashboard']);
           }
         }
@@ -112,9 +118,13 @@ export class UserService implements OnDestroy {
 
 
   requestBaseData(user: User, user_token: string): void {
+    this.statusService.setLoadingStatus(`Welcome, ${user.firstName}!`);
     this.setUserData(user);
+    this.statusService.setLoadingStatus("Requesting course data ...");
     this.requestCourses();
+    this.statusService.setLoadingStatus("Requesting room data ...");
     this.requestRooms();
+    this.statusService.setLoadingStatus("Requesting booking data ...");
     if (user.role == 0) {
       this.requestUserBookings(user.userId, user_token);
     } else {
@@ -122,32 +132,78 @@ export class UserService implements OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {
-    this.destroyed.next();
-    this.destroyed.complete();
-  }
-
-  initUser(): void {
+  init(): void {
     this.router.navigate(['/loading']);
+    var login: string | null = this.localService.getItem("auto_login");
+    if(login != null && login == "true") {
+      this.statusService.setLoadingStatus("Getting active user ...");
       var user_token: string | null = this.localService.getItem("user_token");
       if(user_token != null) {
-        this.loadDataService.verifyToken(user_token)
-          .subscribe({
-            next: (value) => {
-              if(value.ok && value.body != null && user_token != null) {  //Double type guard because the compiler doesn't pick up the inner one
-                this.requestBaseData(JSON.parse(JSON.stringify(value.body)), user_token);
-              } else {
-                this.localService.deleteItem("user_token");
-                this.router.navigate(['/login']);
-              }
-            },
-            error: (value) => {
+        this.statusService.setLoadingStatus("Found. Verifying ...");
+        this.initFromToken(user_token);
+      } else {
+        this.statusService.setLoadingStatus("None found \n Redirecting to login");
+        this.router.navigate(['/login']);
+      }
+    } else {
+      this.router.navigate(['/login']);
+    }
+  }
+
+  initFromToken(user_token: string): void {
+      this.loadDataService.verifyToken(user_token)
+        .subscribe({
+          next: (value) => {
+            if(value.ok && value.body != null) {
+              this.statusService.setLoadingStatus("Done. Loading data ...");
+              this.requestBaseData(JSON.parse(JSON.stringify(value.body)), user_token);
+            } else {
+              this.statusService.setLoadingStatus("Invalid token \n Redirecting to login");
               this.localService.deleteItem("user_token");
               this.router.navigate(['/login']);
             }
-          })
-      } else {
-        this.router.navigate(['/login']);
+          },
+          error: (value) => {
+            this.statusService.setLoadingStatus("Invalid token \n Redirecting to login");
+            this.localService.deleteItem("user_token");
+            this.router.navigate(['/login']);
+          }
+        })
+    }
+
+  initWithoutToken(email: string, password: string, auto: boolean) {
+    this.loadDataService.addToken(email, password)
+      .subscribe({
+        next: (value) => {
+          if (value != null) {
+            var token: UserToken = JSON.parse(JSON.stringify(value.body));
+            if(token.tokens != null) {
+              if(auto) {
+                this.localService.setItem("auto_login", "true");
+              } else {
+                this.localService.setItem("auto_login", "false");
+              }
+              this.localService.setItem("user_token", token.tokens[0]);
+              this.initFromToken(token.tokens[0]);
+            }
+          }
+        },
+        error: () => {
+          this.statusService.setLoginStatus("Something has gone wrong. Please try again at a later point");
+          this.router.navigate(['/login']);
+        }
+      })
+  }
+
+    checkTokens(tokens: string[]): string {
+      var local_token: string | null = this.localService.getItem("user_token");
+      if(local_token != null) {
+        for(let index = 0; index < tokens.length; index++) {
+          if(tokens[index] == local_token) {
+            return tokens[index];
+          }
+        }
       }
+      return "";
     }
 }

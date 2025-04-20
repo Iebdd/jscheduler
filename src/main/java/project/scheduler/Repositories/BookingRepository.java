@@ -94,7 +94,7 @@ public interface BookingRepository extends CrudRepository<Booking, UUID> {
      * 
      * @return  An Iterable containing all rooms happening in the given room on the given day
      */
-    @NativeQuery(value = "SELECT room_id FROM bookings b WHERE b.b_room_id = ?1 AND b.start >= ?2 AND b.end <= ?3")
+    @NativeQuery(value = "SELECT b_room_id FROM bookings b WHERE b.b_room_id = ?1 AND b.start >= ?2 AND b.end <= ?3")
     Iterable<Booking> findAllByRoomIdAndDate(UUID room_id, LocalDateTime start, LocalDateTime end);
 
 

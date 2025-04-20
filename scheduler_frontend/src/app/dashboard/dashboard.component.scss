@@ -1,0 +1,18 @@
+.grid-container {
+    display: grid;
+    grid-template-columns: 65vw 2.5vw 32.5vw;
+    grid-template-rows: 50px 2.5vh calc(97.5vh - 50px)
+}
+
+.top-bar {
+    grid-row-start: 1;
+    grid-column: 1 / -1;
+}
+
+.info-bar {
+    grid-area: 3 / 3;
+}
+
+.main-body {
+    grid-area: 3 / 1;
+}
