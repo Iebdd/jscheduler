@@ -88,7 +88,7 @@ public class ReadController {
   /**
    * Returns all courses taking place in a given room
    * 
-   * @param room_id The id of the room in question
+   * @param room_id The id of the room in question - ID is a HEX number in the format of (DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDDDD)
    * 
    * @return  An Iterable of all Bookings within the room
    */
@@ -98,15 +98,15 @@ public class ReadController {
   }
 
   /**
-   *  Returns all course taking place in a given room on a given day
+   *  Returns all courses taking place in a given room on a given day
    * 
-   * @param room_id The id of the room in question
-   * @param date    The day in question
+   * @param room_id The id of the room in question - ID is a HEX number in the format of (DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDDDD)
+   * @param date    The day in question in the format of YYYY-MM-DD
    * 
    * @return  An Iterable of all Bookings within the room on that day
    */
   @GetMapping(path="/roomBookings/{room_id}/{date}")
-  public ResponseEntity<Iterable<Booking>> getBookedCoursesByDay(@PathVariable UUID room_id, @PathVariable LocalDate date) {
+  public ResponseEntity<Iterable<UUID>> getBookedCoursesByDay(@PathVariable UUID room_id, @PathVariable LocalDate date) {
     LocalDateTime start_day = LocalDateTime.of(date, roomService.findStartByRoomId(room_id));
     LocalDateTime end_day = LocalDateTime.of(date, roomService.findEndByRoomId(room_id));
     return bookingService.findAllBookingsByRoomByDay(room_id, start_day, end_day);
@@ -125,22 +125,30 @@ public class ReadController {
   public ResponseEntity<Iterable<Booking>> getInscribedCourses(@PathVariable UUID user_id, @RequestHeader("Authorization") String header) {
     String token = permissionService.validAuthHeader(header);
     if(token.length() == 0) {
-      return new ResponseEntity<>(new LinkedMultiValueMap<>(), HttpStatus.UNAUTHORIZED);
+      return new ResponseEntity<>(new LinkedMultiValueMap<>(), HttpStatus.NO_CONTENT);
     }
     if(!permissionService.validRole(token, user_id, Permissions.Admin)) {
-      return new ResponseEntity<>(new LinkedMultiValueMap<>(), HttpStatus.UNAUTHORIZED);
+      return new ResponseEntity<>(new LinkedMultiValueMap<>(), HttpStatus.NO_CONTENT);
     }
     return bookingService.findAllBookingsByUser(user_id);
   }
 
+  /**
+   * Returns all Bookings recorded
+   * 
+   * @param header     A Bearer Token containing an authentication token (Authorization: Bearer {token}) Token contains {@value PermissionService#TOKEN_LENGTH} upper or lower case letters, or numbers <p>
+   *                   Requires Assistant level permissions
+   * 
+   * @return  An Iterable containing all Bookings
+   */
   @GetMapping(path="/bookings")
   public ResponseEntity<Iterable<Booking>> getBookings(@RequestHeader("Authorization") String header) {
     String token = permissionService.validAuthHeader(header);
     if(token.length() == 0) {
-      return new ResponseEntity<>(new LinkedMultiValueMap<>(), HttpStatus.UNAUTHORIZED);
+      return new ResponseEntity<>(new LinkedMultiValueMap<>(), HttpStatus.NO_CONTENT);
     }
     if(!permissionService.validRole(token, Permissions.Assistant)) {
-      return new ResponseEntity<>(new LinkedMultiValueMap<>(), HttpStatus.UNAUTHORIZED);
+      return new ResponseEntity<>(new LinkedMultiValueMap<>(), HttpStatus.NO_CONTENT);
     }
     return bookingService.getAllBookings();
   }

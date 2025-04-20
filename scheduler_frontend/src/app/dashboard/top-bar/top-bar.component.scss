@@ -1,5 +1,51 @@
+@font-face {
+    font-family: Copeland;
+    src: url("/assets/Copeland.otf") format('truetype');
+}
+
+:host {
+    --main-colour: #D6E8F2;
+    --secondary-colour: #EEE;
+    --white: #FFF;
+    --main-font-colour: #CCC;
+    --right-blue: #020024;
+    --middle-blue: #073495;
+    --left-blue: #00d4ff;
+}
+
 .top-bar {
     width: 100%;
     height: 100%;
-    background: grey
+    background: var(--middle-blue);
+    display: flex;
+    justify-content: space-between;
+}
+
+.logo {
+    font-weight: 1000;
+    font-size: 30pt;
+    font-family: Copeland;
+    color: var(--secondary-colour);
+}
+
+.logout {
+    height: 50px;
+    width: 150px;
+}
+
+.logout button {
+    background: none;
+    border-top: 0;
+    border-bottom: 0;
+    border-left: 5px var(--secondary-colour) solid;
+    border-right: 5px var(--secondary-colour) solid;
+    cursor: pointer;
+    margin-right: 10px;
+
+    height: 50px;
+    width: 150px;
+}
+
+.logout button:hover {
+    background: #00d4ff;
 }

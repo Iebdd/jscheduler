@@ -1,6 +1,5 @@
 package project.scheduler.Repositories;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -21,26 +20,26 @@ public interface BookingRepository extends CrudRepository<Booking, UUID> {
     /**
      * Selects all Bookings which take place at the same time as the given one
      * 
-     * @param start       The planned start time of the booking as an Instant object
-     * @param end         The planned end time of the booking as an Instant object
+     * @param start       The planned start time of the booking as a LocalDateTime object
+     * @param end         The planned end time of the booking as a LocalDateTime object
      * @param course_id   The id of the course in question as a UUID object
      * 
      * @return  An Iterable of all conflicting bookings
      */
     @NativeQuery(value ="SELECT * FROM bookings b WHERE b.start >= ?1 AND b.end <= ?2 AND b.b_course_id = ?3")
-    Iterable<Booking> getTimeConflicts(Instant start, Instant end, UUID course_id);
+    Iterable<Booking> getTimeConflicts(LocalDateTime start, LocalDateTime end, UUID course_id);
 
     /**
      * Selects all Bookings which take place in the same room as the current one
      * 
-     * @param start       The planned start time of the booking as an Instant object
-     * @param end         The planned end time of the booking as an Instant object
+     * @param start       The planned start time of the booking as a LocalDateTime object
+     * @param end         The planned end time of the booking as a LocalDateTime object
      * @param room_id     The id of the room in question as a UUID object
      * 
      * @return  An Iterable of all conflicting bookings
      */
     @NativeQuery(value ="SELECT * FROM bookings b WHERE b.start >= ?1 AND b.end <= ?2 AND b.b_room_id = ?3")
-    Iterable<Booking> getRoomConflicts(Instant start, Instant end, UUID room_id);
+    Iterable<Booking> getRoomConflicts(LocalDateTime start, LocalDateTime end, UUID room_id);
 
     /**
      * Updates the status of the given booking
@@ -94,8 +93,8 @@ public interface BookingRepository extends CrudRepository<Booking, UUID> {
      * 
      * @return  An Iterable containing all rooms happening in the given room on the given day
      */
-    @NativeQuery(value = "SELECT b_room_id FROM bookings b WHERE b.b_room_id = ?1 AND b.start >= ?2 AND b.end <= ?3")
-    Iterable<Booking> findAllByRoomIdAndDate(UUID room_id, LocalDateTime start, LocalDateTime end);
+    @NativeQuery(value = "SELECT b.bookings_id FROM bookings b WHERE b.b_room_id = ?1 AND b.start >= ?2 AND b.end <= ?3 ORDER BY b.start")
+    Iterable<UUID> findAllByRoomIdAndDate(UUID room_id, LocalDateTime start, LocalDateTime end);
 
 
 }

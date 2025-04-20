@@ -44,7 +44,7 @@ public class VerifyController {
     String[] tokens;
     User user = userService.findUserByEmail(email);
     if(user == null) {
-      return new ResponseEntity<>(new UserToken(), HttpStatus.UNAUTHORIZED);
+      return new ResponseEntity<>(new UserToken(), HttpStatus.NO_CONTENT);
     }
     if(permissionService.validPassword(password, user.getPassword())) {
       permissionService.cullTokens();
@@ -59,7 +59,7 @@ public class VerifyController {
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     }
-    return ResponseEntity.ok(null);
+    return new ResponseEntity<>(new UserToken(), HttpStatus.NO_CONTENT);
   }
 
   /**
@@ -73,13 +73,12 @@ public class VerifyController {
   public ResponseEntity<PublicUser> verifyToken(@RequestHeader("Authorization") String header) {
     String token = permissionService.validAuthHeader(header);
     if(token.length() == 0) {
-      return new ResponseEntity<>(new PublicUser(), HttpStatus.UNAUTHORIZED);
+      return new ResponseEntity<>(new PublicUser(), HttpStatus.NO_CONTENT);
     }
     User user = userService.findUserByToken(token);
     if(user == null) {
-      return new ResponseEntity<>(new PublicUser(), HttpStatus.UNAUTHORIZED);
+      return new ResponseEntity<>(new PublicUser(), HttpStatus.NO_CONTENT);
     } else {
-      System.out.println(user.getUserId());
       return ResponseEntity.ok(new PublicUser(user));
     }
   }

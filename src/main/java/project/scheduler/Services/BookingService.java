@@ -1,6 +1,5 @@
 package project.scheduler.Services;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -50,13 +49,13 @@ public class BookingService {
      * 
      * @param course    The Course object to be booked
      * @param room      The Room object to be booked
-     * @param start     The start time as an Instant object
-     * @param end       The end time as an Instant object
+     * @param start     The start time as a LocalDateTime object
+     * @param end       The end time as an LocalDateTime object
      * @param status    The status of the booking as a Status enum
      * 
      * @return
      */
-    public ResponseEntity<UserBooking> setBooking(Course course, Room room, Instant start, Instant end, Status status) {
+    public ResponseEntity<UserBooking> setBooking(Course course, Room room, LocalDateTime start, LocalDateTime end, Status status) {
         Iterable<Booking> rconflicts_it = bookingRepository.getRoomConflicts(start, end, room.getId());
         Iterable<Booking> tconflicts_it = bookingRepository.getTimeConflicts(start, end , course.getId());
         int room_num = IterableUtils.size(rconflicts_it);
@@ -149,9 +148,9 @@ public class BookingService {
      * @param start     The earliest courses can take place that day
      * @param end       The latest courses can take place that day
      * 
-     * @return  An Iterable containing all Booking in that room on that day
+     * @return  An Iterable containing the bookings ids of all relevant courses
      */
-    public ResponseEntity<Iterable<Booking>> findAllBookingsByRoomByDay(UUID room_id, LocalDateTime start, LocalDateTime end) {
+    public ResponseEntity<Iterable<UUID>> findAllBookingsByRoomByDay(UUID room_id, LocalDateTime start, LocalDateTime end) {
         return ResponseEntity.ok(bookingRepository.findAllByRoomIdAndDate(room_id, start, end));
     }
 

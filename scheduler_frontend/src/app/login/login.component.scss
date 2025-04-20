@@ -3,6 +3,9 @@
     --secondary-colour: #EEE;
     --white: #FFF;
     --main-font-colour: #CCC;
+    --right-blue: #020024;
+    --middle-blue: #073495;
+    --left-blue: #00d4ff;
 }
 
 
@@ -31,7 +34,6 @@
   .wrapper {
     display: flex;
     flex-direction: column;
-
     grid-area: 3 / 2;
     overflow-x: hidden;
     max-width: 390px;

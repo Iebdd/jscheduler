@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-top-bar',
@@ -8,4 +9,9 @@ import { Component } from '@angular/core';
 })
 export class TopBarComponent {
 
+  private router: Router = inject(Router);
+
+  logOut() {
+    this.router.navigate(['/login']);
+  }
 }

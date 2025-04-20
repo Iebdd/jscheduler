@@ -112,7 +112,7 @@ public class UpdateController {
   public ResponseEntity<Boolean> refreshToken(@RequestParam UUID user_id, @RequestHeader("Authorization") String header) {
     String token = permissionService.validAuthHeader(header);
     if(token.length() == 0) {
-      return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
+      return new ResponseEntity<>(false, HttpStatus.NO_CONTENT);
     }
     return permissionService.refreshToken(user_id, token);
   }

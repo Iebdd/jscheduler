@@ -1,6 +1,6 @@
 package project.scheduler.Tables;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import jakarta.persistence.Entity;
@@ -29,8 +29,8 @@ public class Booking {
     @JoinColumn(name = "b_course_id", referencedColumnName = "course_id") // Foreign key reference to Course
     private Course course;
 
-    private Instant start;
-    private Instant end;
+    private LocalDateTime start;
+    private LocalDateTime end;
     private Status status;
 
     /**
@@ -43,11 +43,11 @@ public class Booking {
      * 
      * @param room      The room to reference
      * @param course    The course to reference
-     * @param start     The start time as an Instant
-     * @param end       The end time as an Instant
+     * @param start     The start time as a LocalDateTime
+     * @param end       The end time as a LocalDateTime
      * @param status    The status to be saved as as a Status enum
      */
-    public Booking(Room room, Course course, Instant start, Instant end, Status status) {
+    public Booking(Room room, Course course, LocalDateTime start, LocalDateTime end, Status status) {
         this.room = room;
         this.course = course;
         this.start = start;
@@ -60,7 +60,7 @@ public class Booking {
      * 
      * @param start The start to save
      */
-    public void setStart(Instant start) {
+    public void setStart(LocalDateTime start) {
         this.start = start;
     }
 
@@ -69,7 +69,7 @@ public class Booking {
      * 
      * @param end The end to save
      */
-    public void setEnd(Instant end) {
+    public void setEnd(LocalDateTime end) {
         this.end = end;
     }
 
@@ -123,7 +123,7 @@ public class Booking {
      * 
      * @return  The current start
      */
-    public Instant getStart() {
+    public LocalDateTime getStart() {
         return start;
     }
 
@@ -132,7 +132,7 @@ public class Booking {
      * 
      * @return  The current end
      */
-    public Instant getEnd() {
+    public LocalDateTime getEnd() {
         return end;
     }
 

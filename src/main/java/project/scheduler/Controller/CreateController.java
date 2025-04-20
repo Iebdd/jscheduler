@@ -1,7 +1,6 @@
 package project.scheduler.Controller;
 
-
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -28,6 +27,7 @@ import project.scheduler.Tables.User;
 import project.scheduler.Util.Password;
 import project.scheduler.Util.UserBooking;
 import project.scheduler.Util.UserToken;
+import project.scheduler.Util.TimeUtil;
 
 /**
  * Controller class responsible for creating new entities within the database
@@ -159,7 +159,7 @@ public class CreateController {
    * (The same course taking place in another room : time_conflict / Another course taking place in the same room at the same time: room_conflict)
    */
   @PostMapping(path="/booking")
-  public ResponseEntity<UserBooking> bookRoom(@RequestParam UUID course_id, @RequestParam UUID room_id, @RequestParam Instant start, @RequestParam Instant end, @RequestHeader("Authorization") String header) {
+  public ResponseEntity<UserBooking> bookRoom(@RequestParam UUID course_id, @RequestParam UUID room_id, @RequestParam LocalDateTime start, @RequestParam LocalDateTime end, @RequestHeader("Authorization") String header) {
     Status status = Status.Planned;
     String token = permissionService.validAuthHeader(header);
     if(token.length() == 0) {
@@ -175,7 +175,7 @@ public class CreateController {
     if(room == null || course == null) {
       return new ResponseEntity<>(new UserBooking(), HttpStatus.UNPROCESSABLE_ENTITY);
     }
-    return bookingService.setBooking(course, room, start, end, status);
+    return bookingService.setBooking(course, room, TimeUtil.roundToQuarter(start), TimeUtil.roundToQuarter(end), status);
   }
 
   /**
@@ -192,7 +192,7 @@ public class CreateController {
    * (The same course taking place in another room : time_conflict / Another course taking place in the same room at the same time: room_conflict)
    */
   @PostMapping(path="/preference")
-  public ResponseEntity<UserBooking> setPreference(@RequestParam UUID course_id, @RequestParam UUID room_id, @RequestParam Instant start, @RequestParam Instant end, @RequestHeader("Authorization") String header) {
+  public ResponseEntity<UserBooking> setPreference(@RequestParam UUID course_id, @RequestParam UUID room_id, @RequestParam LocalDateTime start, @RequestParam LocalDateTime end, @RequestHeader("Authorization") String header) {
     String token = permissionService.validAuthHeader(header);
     if(token.length() == 0) {
       return new ResponseEntity<>(new UserBooking(), HttpStatus.UNAUTHORIZED);
@@ -205,7 +205,7 @@ public class CreateController {
     if(room == null || course == null) {
       return new ResponseEntity<>(new UserBooking(), HttpStatus.UNPROCESSABLE_ENTITY);
     }
-    return bookingService.setBooking(course, room, start, end, Status.Preference);
+    return bookingService.setBooking(course, room, TimeUtil.roundToQuarter(start), TimeUtil.roundToQuarter(end), Status.Preference);
   }
 
   /**
