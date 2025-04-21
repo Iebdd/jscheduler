@@ -31,7 +31,26 @@ export class UserService {
 
   private _courses = new BehaviorSubject<Course[]>([]);
   private _rooms = new BehaviorSubject<Room[]>([]);
+  private _timelines = new BehaviorSubject<string[][]>([]);
+  private _date = new BehaviorSubject<Date>(new Date());
+  private _temp_time: string[][] = [];
   private _bookings = new BehaviorSubject<Booking[]>([]);
+  private _info = new BehaviorSubject<Booking>({
+    room: {
+      start: '',
+      end: '',
+      roomName: '',
+      id: ''
+    },
+    course: {
+      courseName: '',
+      id: ''
+    },
+    start: new Date(),
+    end: new Date(),
+    status: '',
+    id: ''
+  })
 
   getUserData(): Observable<User> {
     return this._userData.asObservable();
@@ -47,6 +66,14 @@ export class UserService {
 
   getBookings(): Observable<Booking[]> {
     return this._bookings.asObservable();
+  }
+
+  getDate(): Observable<Date> {
+    return this._date.asObservable();
+  }
+
+  getTimelines(): Observable<string[][]> {
+    return this._timelines.asObservable();
   }
 
   setUserData(user: User): void {
@@ -65,6 +92,55 @@ export class UserService {
     this._bookings.next(bookings);
   }
 
+  setDate(date: Date): void {
+    this._date.next(date);
+  }
+
+  setTimelines(timelines: string[][]): void {
+    this._timelines.next(timelines);
+  }
+
+  mergeTimelines() {
+    if(this._temp_time.length == this._rooms.value.length) {
+      this._timelines.next(this._temp_time);
+    }
+  }
+
+  setUpTimelineRequest(date: string, token: string): void {
+    this._temp_time = [];
+    for(const room of this._rooms.value) {
+      this.requestTimeline(room.id, date, token);
+    }
+  }
+
+  clearData() {
+    var blank_user: User = {
+      userId: '',
+      role: 0,
+      firstName: '',
+      lastName: '',
+      email: ''
+    }
+    this.setUserData(blank_user);
+    this.setCourses([]);
+    this.setRooms([]);
+    this.setBookings([]);
+    this._temp_time = [];
+    this.mergeTimelines();
+  }
+
+  requestTimeline(room_id: string, date: string, token: string) {
+    this.loadDataService.getTimeline(room_id, date, token)
+      .subscribe({
+        next: (value) => {
+          if(value.body != null) {
+            this._temp_time.push(JSON.parse(JSON.stringify(value.body)));
+            this.mergeTimelines();
+          }
+        }
+      })
+  }
+
   requestCourses(): void {
     this.loadDataService.getCourses()
     .subscribe({
@@ -77,13 +153,15 @@ export class UserService {
     });
   }
 
-  requestRooms(): void {
+  requestRooms(user_token: string): void {
     this.loadDataService.getRooms()
     .subscribe({
       next: (value) => {
         if(value.body != null) {
             this.statusService.setLoadingStatus("Done");
             this.setRooms(JSON.parse(JSON.stringify(value.body)));
+            this.setUpTimelineRequest(new Date().toISOString().split('T')[0], user_token);
+
         }
       }
     })
@@ -123,7 +201,7 @@ export class UserService {
     this.statusService.setLoadingStatus("Requesting course data ...");
     this.requestCourses();
     this.statusService.setLoadingStatus("Requesting room data ...");
-    this.requestRooms();
+    this.requestRooms(user_token);
     this.statusService.setLoadingStatus("Requesting booking data ...");
     if (user.role == 0) {
       this.requestUserBookings(user.userId, user_token);

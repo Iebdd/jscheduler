@@ -85,7 +85,19 @@ public interface BookingRepository extends CrudRepository<Booking, UUID> {
     Iterable<Booking> findAllByRoomId(UUID room_id);
 
     /**
-     *  Selects all courses happening in a given room on a given day
+     *  Selects all course ids happening in a given room on a given day
+     * 
+     * @param room_id   The id of the room in question
+     * @param start     The earliest time on the given day
+     * @param end       The latest time on the given day
+     * 
+     * @return  An Iterable containing all courses happening in the given room on the given day
+     */
+    @NativeQuery(value = "SELECT b.bookings_id FROM bookings b WHERE b.b_room_id = ?1 AND b.start >= ?2 AND b.end <= ?3 ORDER BY b.start")
+    Iterable<UUID> findAllIdsByRoomIdAndDate(UUID room_id, LocalDateTime start, LocalDateTime end);
+
+    /**
+     *  Selects all bookings happening in a given room on a given day
      * 
      * @param room_id   The id of the room in question
      * @param start     The earliest time on the given day
@@ -93,8 +105,8 @@ public interface BookingRepository extends CrudRepository<Booking, UUID> {
      * 
      * @return  An Iterable containing all rooms happening in the given room on the given day
      */
-    @NativeQuery(value = "SELECT b.bookings_id FROM bookings b WHERE b.b_room_id = ?1 AND b.start >= ?2 AND b.end <= ?3 ORDER BY b.start")
-    Iterable<UUID> findAllByRoomIdAndDate(UUID room_id, LocalDateTime start, LocalDateTime end);
+    @NativeQuery(value = "SELECT * FROM bookings b WHERE b.b_room_id = ?1 AND b.start >= ?2 AND b.end <= ?3 ORDER BY b.start")
+    Iterable<Booking> findAllBookingsByRoomIdAndDate(UUID room_id, LocalDateTime start, LocalDateTime end);
 
 
 }

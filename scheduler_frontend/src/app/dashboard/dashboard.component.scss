@@ -1,7 +1,19 @@
+:host {
+    --main-colour: #D6E8F2;
+    --secondary-colour: #EEE;
+    --white: #FFF;
+    --main-font-colour: #CCC;
+    --right-blue: #020024;
+    --middle-blue: #073495;
+    --left-blue: #00d4ff;
+}
+
 .grid-container {
     display: grid;
+    overflow: hidden;
     grid-template-columns: 65vw 2.5vw 32.5vw;
-    grid-template-rows: 50px 2.5vh calc(97.5vh - 50px)
+    grid-template-rows: 50px 2.5vh calc(97.5vh - 50px);
+    background: var(--secondary-colour);
 }
 
 .top-bar {

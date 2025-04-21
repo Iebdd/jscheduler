@@ -42,5 +42,4 @@ public interface RoomRepository extends CrudRepository<Room, UUID> {
      */
     @NativeQuery(value = "SELECT r.end FROM rooms r WHERE r.room_id = ?1")
     LocalTime findEndById(UUID course_id);
-
 }

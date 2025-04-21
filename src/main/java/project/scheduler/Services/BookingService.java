@@ -1,5 +1,6 @@
 package project.scheduler.Services;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -24,6 +25,8 @@ public class BookingService {
 
     @Inject
     private BookingRepository bookingRepository;
+    @Inject
+    private RoomService roomService;
 
     /**
      * An enum representing the possible status a booking can have
@@ -150,8 +153,16 @@ public class BookingService {
      * 
      * @return  An Iterable containing the bookings ids of all relevant courses
      */
-    public ResponseEntity<Iterable<UUID>> findAllBookingsByRoomByDay(UUID room_id, LocalDateTime start, LocalDateTime end) {
-        return ResponseEntity.ok(bookingRepository.findAllByRoomIdAndDate(room_id, start, end));
+    public Iterable<UUID> findAllIdsByRoomIdAndDate(UUID room_id, LocalDate day) {
+        LocalDateTime start_day = LocalDateTime.of(day, roomService.findStartByRoomId(room_id));
+        LocalDateTime end_day = LocalDateTime.of(day, roomService.findEndByRoomId(room_id));
+        return bookingRepository.findAllIdsByRoomIdAndDate(room_id, start_day, end_day);
+    }
+
+    public Iterable<Booking> findAllBookingsByRoomByDay(UUID room_id, LocalDate day) {
+        LocalDateTime start_day = LocalDateTime.of(day, roomService.findStartByRoomId(room_id));
+        LocalDateTime end_day = LocalDateTime.of(day, roomService.findEndByRoomId(room_id));
+        return bookingRepository.findAllBookingsByRoomIdAndDate(room_id, start_day, end_day);
     }
 
     public ResponseEntity<Iterable<Booking>> getAllBookings() {

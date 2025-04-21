@@ -164,6 +164,10 @@ export class LoadDataService {
     return this.get(`${this._URI}/read/bookings`, token);   //Returns Booking Array
   }
 
+  getTimeline(room_id: string, date: string, token: string): Observable<HttpResponse<string>> {
+    return this.get(`${this._URI}/read/timeline/${room_id}/${date}`, token); //Returns string array
+  }
+
   //Update
 
   updatePasswordViaPassword(old_password: string, new_password: string, user_id: string): Observable<HttpResponse<string>> {

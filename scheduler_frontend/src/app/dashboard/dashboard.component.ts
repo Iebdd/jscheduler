@@ -12,54 +12,6 @@ import { TopBarComponent } from "./top-bar/top-bar.component";
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent {
 
-  private _userService: UserService = inject(UserService);
-
-  protected _active_user: User = {
-    userId: '',
-    role: 0,
-    firstName: '',
-    lastName: '',
-    email: ''
-  }
-
-  protected _courses: Course[] = [];
-  protected _rooms: Room[] = [];
-  protected _bookings: Booking[] = [];
-
-
-  setActiveUser(user: User): void {
-    this._active_user.role = user.role;
-    this._active_user.firstName = user.firstName;
-    this._active_user.lastName = user.lastName;
-    this._active_user.email = user.email;
-  }
-
-  getUserData(): void {
-    this._userService.getUserData()
-      .subscribe(userData => this._active_user = userData);
-  }
-
-  getCourses(): void {
-    this._userService.getCourses()
-      .subscribe(courses => this._courses = courses);
-  }
-
-  getRooms(): void {
-    this._userService.getRooms()
-      .subscribe(rooms => this._rooms = rooms);
-  }
-
-  getBookings(): void {
-    this._userService.getBookings()
-      .subscribe(bookings => this._bookings = bookings);
-  }
-
-  ngOnInit(): void {
-    this.getUserData();
-    this.getCourses();
-    this.getRooms();
-    this.getBookings();
-  }
 }

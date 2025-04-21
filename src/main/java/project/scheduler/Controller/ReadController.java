@@ -1,7 +1,7 @@
 package project.scheduler.Controller;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -23,6 +23,7 @@ import project.scheduler.Services.RoomService;
 import project.scheduler.Tables.Booking;
 import project.scheduler.Tables.Course;
 import project.scheduler.Tables.Room;
+import project.scheduler.Util.TimeUtil;
 
 
 /**
@@ -107,9 +108,7 @@ public class ReadController {
    */
   @GetMapping(path="/roomBookings/{room_id}/{date}")
   public ResponseEntity<Iterable<UUID>> getBookedCoursesByDay(@PathVariable UUID room_id, @PathVariable LocalDate date) {
-    LocalDateTime start_day = LocalDateTime.of(date, roomService.findStartByRoomId(room_id));
-    LocalDateTime end_day = LocalDateTime.of(date, roomService.findEndByRoomId(room_id));
-    return bookingService.findAllBookingsByRoomByDay(room_id, start_day, end_day);
+    return ResponseEntity.ok(bookingService.findAllIdsByRoomIdAndDate(room_id, date));
   }
 
   /**
@@ -151,6 +150,28 @@ public class ReadController {
       return new ResponseEntity<>(new LinkedMultiValueMap<>(), HttpStatus.NO_CONTENT);
     }
     return bookingService.getAllBookings();
+  }
+
+  /**
+   *  Returns a timeline of slots for a given room on a given day
+   * 
+   * @param room_id   The id of the room in question
+   * @param date      The date in question
+   * @param header    A Bearer Token containing an authentication token (Authorization: Bearer {token}) Token contains {@value PermissionService#TOKEN_LENGTH} upper or lower case letters, or numbers <p>
+   *                  Requires Student level permissions 
+   * 
+   * @return  An Iterable containing slots in a given room for a given day
+   */
+  @GetMapping(path="/timeline/{room_id}/{date}")
+  public ResponseEntity<Iterable<UUID>> getTimeline(@PathVariable UUID room_id, @PathVariable LocalDate date, @RequestHeader("Authorization") String header) {
+    String token = permissionService.validAuthHeader(header);
+    if(token.length() == 0) {     //No need to check for role since an existing header means meeting permission requirements
+      return new ResponseEntity<>(new LinkedMultiValueMap<>(), HttpStatus.NO_CONTENT);
+    }
+    Iterable<Booking> bookings = bookingService.findAllBookingsByRoomByDay(room_id, date);
+    LocalTime start = roomService.findStartByRoomId(room_id);
+    LocalTime end = roomService.findEndByRoomId(room_id);
+    return ResponseEntity.ok(TimeUtil.getTimeline(bookings, start, end));
   }
 
 }

@@ -52,3 +52,9 @@ export interface Inscription {
     user_id: string;
     course_id: string;
 }
+
+export interface Segment {
+  booking_id: string;
+  status: number;
+  empty: boolean;
+}
