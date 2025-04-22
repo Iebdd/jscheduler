@@ -15,17 +15,24 @@
         </div>
     </div>
     <div class="rooms">
-        @for(room of _rooms; track $index; let index = $index) {
+        @for(room of _rooms; track $index; let outer_index = $index) {
             <div>
                 <div class="name">{{room.roomName}}</div>
-                @for(segment of _timelines[index]; track $index; let inner_index = $index; let first = $first; let last = $last) {
-                    <div class="segment" [ngClass]="(segment.status == 0) ? 'set' : (segment.status == 1) ? 'planned' : 'preference'" [ngClass]="(segment.empty == true) ? 'empty' : 'course'" [ngStyle]="first ? _topBorder : (last ? _botBorder : _sideBorder)">
+                @for(segment of _timelines[outer_index]; track $index; let inner_index = $index; let first = $first; let last = $last) {
+                    <div class="segment" 
+                            [class.mouseover]="(this._mouseover.booking_id == segment.booking_id && this._mouseover.room == outer_index)" 
+                            [ngClass]="(segment.status == 0) ? 'set' : (segment.status == 1) ? 'planned' : (segment.status == 2) ? 'preference' : ''" 
+                            [class]="(segment.empty == true) ? 'empty' : 'course'" [ngStyle]="first ? _topBorder : (last ? _botBorder : _sideBorder)"
+                    >
                         @if(segment.empty == true) {
-                        <div (click)="newCourse(index)">&nbsp;</div>
+                        <ng-container (click)="newCourse(outer_index, _hour_markers[inner_index])">{{_hour_markers[inner_index]}}</ng-container>
                         } @else {
-                        <div (click)="courseInfo(segment.booking_id)">
-                            @if(_timelines[index][inner_index - 1].booking_id == null) {
-                                {{segment.booking_id | courseName: this._bookings}}
+                        <div 
+                            (mouseleave)="setHover('', -1, -1)" 
+                            (mouseenter)="setHover(segment.booking_id, outer_index, inner_index)" 
+                            (click)="courseInfo(segment.booking_id)">
+                            @if(_timelines[outer_index][inner_index - 1].booking_id == null) {
+                                {{segment.booking_id | courseName: this._bookings : this._courses}}
                             } @else {
                                 &nbsp;
                             }
@@ -39,10 +46,10 @@
         }
         <div class="hours">
             @for(time of _hour_markers; track $index) {
-                @if(time == "") {
-                    <div>&nbsp;</div>
-                } @else {
+                @if(time.match("[0-9]?[0-9]:00")) {
                     <div>{{time}}</div>
+                } @else {
+                    <div>&nbsp;</div>
                 }
             }
         </div>

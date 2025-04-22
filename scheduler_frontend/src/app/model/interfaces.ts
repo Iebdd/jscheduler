@@ -28,12 +28,12 @@ export interface User {
 }
 
 export interface Booking {
-  room:   Room;
-  course: Course;
+  bookings_id: string;
+  room_id:   string;
+  course_id: string;
   start:  Date;
   end:    Date;
   status: string;
-  id:     string;
 }
 
 export interface Course {
@@ -57,4 +57,10 @@ export interface Segment {
   booking_id: string;
   status: number;
   empty: boolean;
+}
+
+export interface Mouseover {
+  booking_id: string;
+  room: number;
+  index: number;
 }

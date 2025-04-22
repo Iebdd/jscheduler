@@ -177,4 +177,13 @@ public class User {
   public String getEmail() {
     return this.email;
   }
+
+  @Override
+  public String toString() {
+      StringBuilder new_string = new StringBuilder();
+      new_string.append(String.format("{\"user_id\": \"%s\", \"email\": \"%s\", \"firstName\": \"%s\", \"lastName\": \"%s\", \"role\": \"%d\"}", 
+                                              this.user_id, this.email, this.firstName, this.lastName, this.role));
+      return new_string.toString();
+  }
+
 }

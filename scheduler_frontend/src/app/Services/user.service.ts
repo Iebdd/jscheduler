@@ -34,22 +34,14 @@ export class UserService {
   private _timelines = new BehaviorSubject<string[][]>([]);
   private _date = new BehaviorSubject<Date>(new Date());
   private _temp_time: string[][] = [];
-  private _bookings = new BehaviorSubject<Booking[]>([]);
+  private _bookings = new BehaviorSubject<string>("");
   private _info = new BehaviorSubject<Booking>({
-    room: {
-      start: '',
-      end: '',
-      roomName: '',
-      id: ''
-    },
-    course: {
-      courseName: '',
-      id: ''
-    },
+    room_id: '',
+    course_id: '',
     start: new Date(),
     end: new Date(),
     status: '',
-    id: ''
+    bookings_id: ''
   })
 
   getUserData(): Observable<User> {
@@ -64,7 +56,7 @@ export class UserService {
     return this._rooms.asObservable();
   }
 
-  getBookings(): Observable<Booking[]> {
+  getBookings(): Observable<string> {
     return this._bookings.asObservable();
   }
 
@@ -88,7 +80,7 @@ export class UserService {
     this._rooms.next(rooms);
   }
 
-  setBookings(bookings: Booking[]): void {
+  setBookings(bookings: string): void {
     this._bookings.next(bookings);
   }
 
@@ -101,13 +93,22 @@ export class UserService {
   }
 
   mergeTimelines() {
-    if(this._temp_time.length == this._rooms.value.length) {
+    var filled: boolean = true;
+    for(var index = 0; index < this._rooms.value.length; index++) {
+      if(this._temp_time[index].length == 0) {  //Only push the buffer if all slots are filled
+        filled = false;
+      }
+    }
+    if (filled == true) {
       this._timelines.next(this._temp_time);
     }
   }
 
   setUpTimelineRequest(date: string, token: string): void {
     this._temp_time = [];
+    for(var index = 0; index < this._rooms.value.length; index++) {
+      this._temp_time.push([]);     // Make sure there are as many timeline slots as there are rooms
+    }
     for(const room of this._rooms.value) {
       this.requestTimeline(room.id, date, token);
     }
@@ -124,7 +125,7 @@ export class UserService {
     this.setUserData(blank_user);
     this.setCourses([]);
     this.setRooms([]);
-    this.setBookings([]);
+    this.setBookings("{}");
     this._temp_time = [];
     this.mergeTimelines();
   }
@@ -134,7 +135,11 @@ export class UserService {
       .subscribe({
         next: (value) => {
           if(value.body != null) {
-            this._temp_time.push(JSON.parse(JSON.stringify(value.body)));
+            for(var index = 0; index < this._rooms.value.length; index++) {
+              if(this._rooms.value[index].id == room_id) {  //Assign the timeline to the correct room index
+                this._temp_time[index] = JSON.parse(JSON.stringify(value.body));
+              }
+            }
             this.mergeTimelines();
           }
         }
@@ -173,7 +178,7 @@ export class UserService {
         next: (value) => {
           if(value.body != null) {
             this.statusService.setLoadingStatus("Done");
-            this.setBookings(JSON.parse(JSON.stringify(value.body)));
+            this.setBookings(JSON.parse(value.body));
             this.router.navigate(['/dashboard']);
           }
         }
@@ -186,7 +191,7 @@ export class UserService {
         next: (value) => {
           if(value.body != null) {
             this.statusService.setLoadingStatus("Done");
-            this.setBookings(Parse.toBooking(JSON.stringify(value.body)));
+            this.setBookings(JSON.stringify(value.body));
             this.statusService.setLoadingStatus("Data loaded. Redirecting to dashboard");
             this.router.navigate(['/dashboard']);
           }

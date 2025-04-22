@@ -52,12 +52,12 @@ public class TimeUtil {
                 continue;
             }
             if(current_time.equals(LocalTime.from(current.getStart()))) {
-                timeline.add(current.getId());
+                timeline.add(current.getBookings_id());
                 current_time = current_time.plusMinutes(15);
                 started = true;
             } else if (started) {
                 if(current_time.equals(LocalTime.from(current.getEnd()))) {
-                    timeline.add(current.getId());
+                    timeline.add(current.getBookings_id());
                     current_time = current_time.plusMinutes(15);
                     started = false;
                     if(bookings_it.hasNext()) {
@@ -66,7 +66,7 @@ public class TimeUtil {
                         current = null;
                     }
                 } else {
-                    timeline.add(current.getId());
+                    timeline.add(current.getBookings_id());
                     current_time = current_time.plusMinutes(15);
                 }
             } else {

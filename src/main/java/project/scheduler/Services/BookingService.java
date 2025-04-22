@@ -70,21 +70,21 @@ public class BookingService {
             if(room_num != 0) {
                 r_conflicts = new ArrayList<>();
                 for(Booking booking : rconflicts_it) {
-                    r_conflicts.add(booking.getId());
+                    r_conflicts.add(booking.getBookings_id());
                 }
                 c_booking.setRoomConflicts(r_conflicts);
             }
             if(time_num != 0) {
                 t_conflicts = new ArrayList<>();
                 for (Booking booking : tconflicts_it) {
-                    t_conflicts.add(booking.getId());
+                    t_conflicts.add(booking.getBookings_id());
                 }
                 c_booking.setTimeConflicts(t_conflicts);
             }
             return new ResponseEntity<>(c_booking, HttpStatus.CONFLICT);
         }
 
-        UUID new_id = bookingRepository.save(new Booking(room, course, start, end, status)).getId();
+        UUID new_id = bookingRepository.save(new Booking(room, course, start, end, status)).getBookings_id();
         return ResponseEntity.ok(new UserBooking(new_id));
     }
 
@@ -165,7 +165,7 @@ public class BookingService {
         return bookingRepository.findAllBookingsByRoomIdAndDate(room_id, start_day, end_day);
     }
 
-    public ResponseEntity<Iterable<Booking>> getAllBookings() {
-        return ResponseEntity.ok(bookingRepository.findAll());
+    public Iterable<Booking> getAllBookings() {
+        return bookingRepository.findAll();
     }
 }

@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { UserService } from '../../Services/user.service';
-import { Booking, Course, Room, Segment, User } from '../../model/interfaces';
+import { Booking, Course, Mouseover, Room, Segment, User } from '../../model/interfaces';
 import { CommonModule, DatePipe } from '@angular/common';
 import { HostListener } from "@angular/core";
 import { LocalService } from '../../Services/local.service';
@@ -43,24 +43,30 @@ export class MainBodyComponent implements OnInit {
   protected _courses: Course[] = [];
   protected _rooms: Room[] = [];
   protected _date: Date;
-  protected _bookings: Booking[] = [];
+  protected _bookings: string = "";       //Bookings are saved as a string because the object liked losing its id
   protected _timelines: Segment[][] = [];
   protected _screenHeight = 0;
   protected _screenWidth = 0;
+  protected _mouseover: Mouseover = {
+    booking_id: '',
+    room: -1,
+    index: -1
+  }
   protected _hour_markers: string[] = [
-    "8:00","", "", "", 
-    "9:00","", "", "", 
-    "10:00","", "", "", 
-    "11:00","", "", "",  
-    "12:00","", "", "",  
-    "13:00","", "", "",  
-    "14:00","", "", "",  
-    "15:00","", "", "",  
-    "16:00","", "", "",  
-    "17:00","", "", "",  
-    "18:00","", "", "",  
-    "19:00","", "", "",  
-    "20:00","", "", "", ];
+    "7:00", "7:15", "7:30", "7:45",
+    "8:00","8:15", "8:30", "8:45", 
+    "9:00","9:15", "9:30", "8:45", 
+    "10:00","10:15", "10:30", "10:45", 
+    "11:00","11:15", "11:30", "11:45",  
+    "12:00","12:15", "12:30", "12:45",  
+    "13:00","13:15", "13:30", "13:45",  
+    "14:00","14:15", "14:30", "14:45",  
+    "15:00","15:15", "15:30", "15:45",  
+    "16:00","16:15", "16:30", "16:45",  
+    "17:00","17:15", "17:30", "17:45",  
+    "18:00","18:15", "18:30", "18:45",  
+    "19:00","19:15", "19:30", "19:45",  
+    "20:00"];
 
   protected _sideBorder = {'border-top': "0", 'border-left': "2px black solid", 'border-right': "2px black solid", 'border-bottom': "0"};
   protected _topBorder = {'border-top': "2px black solid", 'border-left': "2px black solid", 'border-right': "2px black solid", 'border-bottom': "0"};
@@ -78,8 +84,13 @@ export class MainBodyComponent implements OnInit {
     this.getNewTimeline(next_date);
   }
 
-  newCourse(index: number) {
-    
+  setHover(booking_id: string, room: number, index: number) {
+    console.log(`ID: ${booking_id} - room: ${room} - index: ${index}`);
+    this._mouseover = {"booking_id": booking_id, "room": room, "index": index};
+  }
+
+  newCourse(index: number, time: string) {
+    console.log()
   }
 
   courseInfo(course_id: string) {
@@ -97,12 +108,12 @@ export class MainBodyComponent implements OnInit {
         this._timelines[outer_index].push(new_segment);
       }
     }
-    console.log(this._timelines);
   }
 
-  getStatus(booking_id: string): number {
-    for (var booking of this._bookings) {
-      if (booking.id = booking_id) {
+  getStatus(bookings_id: string): number {
+    var obj_bookings: Booking[] = JSON.parse(this._bookings);
+    for (var booking of obj_bookings) {
+      if (booking.bookings_id == bookings_id) {
         switch(booking.status) {
           case "Set":
             return 0;
@@ -111,11 +122,11 @@ export class MainBodyComponent implements OnInit {
           case "Preference":
             return 2;
           default:
-            return 0;
+            return -1;
         }
       }
     }
-    return 0;
+    return -1;
   }
 
   getNewTimeline(next_date: Date) {
@@ -154,7 +165,9 @@ export class MainBodyComponent implements OnInit {
 
   getBookings(): void {
     this._userService.getBookings()
-      .subscribe(bookings => this._bookings = bookings);
+      .subscribe(bookings => {
+        this._bookings = bookings
+      });
   }
   
   getDate(): void {

@@ -41,21 +41,28 @@
     min-width: 200px;
 }
 
+.segment.course {
+    transition: ease-in 0.2s;
+}
+
 .hours {
     margin-top: 25px;
     padding-right: 20px;
 }
 
 .hours div {
-    height: 19.5px;
+    height: 18px;
 }
 
 .course {
     text-align: center;
     font-weight: 600;
+    cursor: pointer;
+}
+
+div .set {
     background: var(--right-blue);
     color: var(--main-font-colour);
-    cursor: pointer;
 }
 
 .rooms {
@@ -68,15 +75,31 @@
     margin-left: 40px;
 }
 
+.empty {
+    color: var(--secondary-colour);
+    text-align: center;
+}
+
 .empty:hover {
     background: var(--grey);
-    border: 1px black solid;
+    border: 5px black solid;
     cursor: pointer;
+    color: #000;
+    transform: scale(1.2);
+}
+
+.mouseover {
+    transform: scale(1.1);
+    transition: ease-out 0.2s;
 }
 
 
 svg {
     cursor: pointer;
+}
+
+.date-container svg:hover {
+    transform: scale(1.3);
 }
 
 .name {

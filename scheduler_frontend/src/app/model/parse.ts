@@ -178,7 +178,7 @@ const typeMap: any = {
       { json: "start", js: "start", typ: Date },
       { json: "end", js: "end", typ: Date },
       { json: "status", js: "status", typ: "" },
-      { json: "id", js: "id", typ: "" },
+      { json: "bookings_id", js: "bookings_id", typ: "" },
   ], false),
   "Course": o([
       { json: "courseName", js: "courseName", typ: "" },

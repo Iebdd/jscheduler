@@ -160,7 +160,7 @@ export class LoadDataService {
     return this.get(`${this._URI}/read/userBookings/${user_id}`, token);  //Returns Booking array
   }
 
-  getAllBookings(token: string): Observable<HttpResponse<string>> {
+  getAllBookings(token: string): Observable<HttpResponse<Object>> {
     return this.get(`${this._URI}/read/bookings`, token);   //Returns Booking Array
   }
 

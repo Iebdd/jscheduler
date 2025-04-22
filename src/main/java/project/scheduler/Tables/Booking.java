@@ -78,7 +78,7 @@ public class Booking {
      * 
      * @return  The current id
      */
-    public UUID getId() {
+    public UUID getBookings_id() {
         return bookings_id;
     }
 
@@ -152,5 +152,13 @@ public class Booking {
      */
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder new_string = new StringBuilder();
+        new_string.append(String.format("{\"bookings_id\": \"%s\", \"room_id\": \"%s\", \"course_id\": \"%s\", \"start\": \"%s\", \"end\": \"%s\", \"status\": \"%s\"}", 
+                                            this.bookings_id, this.room.getId(), this.course.getId(), this.start, this.end, this.status));
+        return new_string.toString();
     }
 }

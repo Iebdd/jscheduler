@@ -7,19 +7,19 @@ import { Booking, Course } from '../model/interfaces';
 export class CourseNamePipe implements PipeTransform {
 
 
-  transform(id: string, bookings: Booking[]): string {
+  transform(id: string, bookings: string, courses: Course[]): string {
+    var obj_bookings: Booking[] = JSON.parse(bookings);
     var result: string = "";
-    console.log("Input: " + )
-    for(var booking of bookings) {
-      if(booking.id == id) {
-       result = booking.course.courseName;
-      }
+    for(var booking of obj_bookings) {
+      if(booking.bookings_id == id) {
+        for(var course of courses) {
+          if(course.id == booking.course_id) {
+            return course.courseName;
+          }
+        }
+        }
     }
-    if(result.length != 0) {
-      return result;
-    } else {
-      return '';
-    }
+    return "";
   }
 
 }

@@ -36,6 +36,7 @@ dependencies {
 	implementation 'org.springframework.security:spring-security-core'
 	implementation 'jakarta.inject:jakarta.inject-api'
 	implementation 'org.apache.maven.plugins:maven-javadoc-plugin:3.11.2'
+	implementation 'org.json:json:20250107'
 	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

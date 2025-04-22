@@ -51,9 +51,15 @@ public class MockDataService {
     };
 
     private static final String[][] times = new String[][] {
-        {"2025-04-21T15:05:00", "2025-04-21T17:00:00"},
-        {"2025-04-21T18:12:00", "2025-04-21T19:45:00"},
-        {"2025-04-21T12:44:00", "2025-04-21T15:15:00"}
+        {"2025-04-23T15:05:00", "2025-04-23T17:00:00"},
+        {"2025-04-23T18:12:00", "2025-04-23T19:45:00"},
+        {"2025-04-23T12:44:00", "2025-04-23T15:15:00"}
+    };
+
+    private static final String[][] times2 = new String[][] {
+        {"2025-04-23T12:05:00", "2025-04-23T14:00:00"},
+        {"2025-04-23T09:12:00", "2025-04-23T13:45:00"},
+        {"2025-04-23T07:44:00", "2025-04-23T11:15:00"}
     };
     
 
@@ -131,6 +137,16 @@ public class MockDataService {
             map.add("room_id", rooms_obj.get(outer_i));
             map.add("start", times[outer_i][0]);
             map.add("end", times[outer_i][1]);
+
+            sendPost(URI + "/add/booking", token, map, UserBooking.class);
+            map.clear();
+        }
+        for(int outer_i = 0; outer_i < courses.length; outer_i++) {
+            map.add("course_id", courses_obj.get(courses.length - 1 - outer_i));
+            map.add("room_id", rooms_obj.get(courses.length - 1 - outer_i));
+            map.add("start", times2[outer_i][0]);
+            map.add("end", times2[outer_i][1]);
+
             sendPost(URI + "/add/booking", token, map, UserBooking.class);
             map.clear();
         }

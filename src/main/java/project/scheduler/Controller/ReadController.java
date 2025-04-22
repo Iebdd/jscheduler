@@ -20,9 +20,11 @@ import project.scheduler.Services.CourseService;
 import project.scheduler.Services.PermissionService;
 import project.scheduler.Services.PermissionService.Permissions;
 import project.scheduler.Services.RoomService;
+import project.scheduler.Services.UserService;
 import project.scheduler.Tables.Booking;
 import project.scheduler.Tables.Course;
 import project.scheduler.Tables.Room;
+import project.scheduler.Util.StringUtil;
 import project.scheduler.Util.TimeUtil;
 
 
@@ -41,6 +43,8 @@ public class ReadController {
   private BookingService bookingService;
   @Inject
   private RoomService roomService;
+  @Inject
+  private UserService userService;
 
   /**
    *  Returns an Iterable containing all Rooms currently in the database
@@ -141,7 +145,7 @@ public class ReadController {
    * @return  An Iterable containing all Bookings
    */
   @GetMapping(path="/bookings")
-  public ResponseEntity<Iterable<Booking>> getBookings(@RequestHeader("Authorization") String header) {
+  public ResponseEntity<String> getBookings(@RequestHeader("Authorization") String header) {
     String token = permissionService.validAuthHeader(header);
     if(token.length() == 0) {
       return new ResponseEntity<>(new LinkedMultiValueMap<>(), HttpStatus.NO_CONTENT);
@@ -149,7 +153,19 @@ public class ReadController {
     if(!permissionService.validRole(token, Permissions.Assistant)) {
       return new ResponseEntity<>(new LinkedMultiValueMap<>(), HttpStatus.NO_CONTENT);
     }
-    return bookingService.getAllBookings();
+    return ResponseEntity.ok(StringUtil.toString(bookingService.getAllBookings()));
+  }
+
+  @GetMapping(path="/users")
+  public ResponseEntity<String> getUsers(@RequestHeader("Authorization") String header) {
+    String token = permissionService.validAuthHeader(header);
+    if(token.length() == 0) {
+      return new ResponseEntity<>(new LinkedMultiValueMap<>(), HttpStatus.NO_CONTENT);
+    }
+    if(!permissionService.validRole(token, Permissions.Admin)) {
+      return new ResponseEntity<>(new LinkedMultiValueMap<>(), HttpStatus.NO_CONTENT);
+    }
+    return ResponseEntity.ok(StringUtil.toString(userService.getAllUsers()));
   }
 
   /**

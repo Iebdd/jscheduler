@@ -83,4 +83,8 @@ public class UserService {
     public User findUserByToken(String token) {
         return userRepository.findUserByToken(token);
     }
+
+    public Iterable<User> getAllUsers() {
+        return userRepository.findAll();
+    }
 }
