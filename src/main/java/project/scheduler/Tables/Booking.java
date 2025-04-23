@@ -78,7 +78,7 @@ public class Booking {
      * 
      * @return  The current id
      */
-    public UUID getBookings_id() {
+    public UUID getBookings_id() {  //Not adhering to convention because Jackson takes the title as the variable name
         return bookings_id;
     }
 

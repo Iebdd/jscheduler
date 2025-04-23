@@ -25,13 +25,15 @@
                             [class]="(segment.empty == true) ? 'empty' : 'course'" [ngStyle]="first ? _topBorder : (last ? _botBorder : _sideBorder)"
                     >
                         @if(segment.empty == true) {
-                        <ng-container (click)="newCourse(outer_index, _hour_markers[inner_index])">{{_hour_markers[inner_index]}}</ng-container>
+                        <div (click)="newCourse(outer_index, inner_index)">
+                            {{_hour_markers[inner_index]}}
+                        </div>
                         } @else {
                         <div 
                             (mouseleave)="setHover('', -1, -1)" 
                             (mouseenter)="setHover(segment.booking_id, outer_index, inner_index)" 
-                            (click)="courseInfo(segment.booking_id)">
-                            @if(_timelines[outer_index][inner_index - 1].booking_id == null) {
+                            (click)="bookingInfo(segment.booking_id, outer_index)">
+                            @if(_timelines[outer_index][inner_index - 1].booking_id != _timelines[outer_index][inner_index].booking_id) {
                                 {{segment.booking_id | courseName: this._bookings : this._courses}}
                             } @else {
                                 &nbsp;

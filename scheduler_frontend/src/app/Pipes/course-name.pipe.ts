@@ -9,7 +9,6 @@ export class CourseNamePipe implements PipeTransform {
 
   transform(id: string, bookings: string, courses: Course[]): string {
     var obj_bookings: Booking[] = JSON.parse(bookings);
-    var result: string = "";
     for(var booking of obj_bookings) {
       if(booking.bookings_id == id) {
         for(var course of courses) {

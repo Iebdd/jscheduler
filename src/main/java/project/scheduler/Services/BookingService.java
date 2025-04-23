@@ -129,8 +129,8 @@ public class BookingService {
      * 
      * @return  An Iterable of all bookings the user is part of
      */
-    public ResponseEntity<Iterable<Booking>> findAllBookingsByUser(UUID user_id) {
-        return ResponseEntity.ok(bookingRepository.findAllByUserId(user_id));
+    public Iterable<Booking> findAllBookingsByUser(UUID user_id) {
+        return bookingRepository.findAllByUserId(user_id);
     }
 
     /**

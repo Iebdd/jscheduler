@@ -6,5 +6,15 @@ export enum LoginStates {
 export enum Feedback {
     Neutral,
     Valid,
-    Invalid
+    Invalid,
+    Warning
+}
+
+export enum InfoStates {
+    Default,
+    CourseInfo,
+    NewCourseRoom,    
+    NewCourseStart,
+    NewCourseEnd,
+    NewCourseCourse
 }

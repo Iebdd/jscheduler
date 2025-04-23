@@ -1,11 +1,11 @@
 import { inject, Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { Booking, Course, Room, User, UserToken } from '../model/interfaces';
+import { Booking, Course, Info, Room, Segment, User, UserToken } from '../model/interfaces';
 import { LoadDataService } from './load-data.service';
 import { LocalService } from './local.service';
-import { Parse } from '../model/parse';
 import { Router } from '@angular/router';
 import { StatusService } from './status.service';
+import { InfoStates } from '../model/enums';
 
 @Injectable({
   providedIn: 'root'
@@ -14,10 +14,10 @@ export class UserService {
 
   constructor() {}
 
-  private loadDataService: LoadDataService = inject(LoadDataService);
-  private localService: LocalService = inject(LocalService);
-  private router: Router =  inject(Router);
-  private statusService: StatusService = inject(StatusService);
+  private _loadDataService: LoadDataService = inject(LoadDataService);
+  private _localService: LocalService = inject(LocalService);
+  private _router: Router =  inject(Router);
+  private _statusService: StatusService = inject(StatusService);
 
   private _userData = new BehaviorSubject<User>(
     {
@@ -27,22 +27,41 @@ export class UserService {
       lastName: '',
       email: ''
     });
+
+  protected _hour_markers: string[] = [
+    "07:00", "07:15", "07:30", "07:45",
+    "08:00","08:15", "08:30", "08:45", 
+    "09:00","09:15", "09:30", "08:45", 
+    "10:00","10:15", "10:30", "10:45", 
+    "11:00","11:15", "11:30", "11:45",  
+    "12:00","12:15", "12:30", "12:45",  
+    "13:00","13:15", "13:30", "13:45",  
+    "14:00","14:15", "14:30", "14:45",  
+    "15:00","15:15", "15:30", "15:45",  
+    "16:00","16:15", "16:30", "16:45",  
+    "17:00","17:15", "17:30", "17:45",  
+    "18:00","18:15", "18:30", "18:45",  
+    "19:00","19:15", "19:30", "19:45",  
+    "20:00"];
   
 
   private _courses = new BehaviorSubject<Course[]>([]);
+  private _permission = new BehaviorSubject<number>(0);
   private _rooms = new BehaviorSubject<Room[]>([]);
-  private _timelines = new BehaviorSubject<string[][]>([]);
+  private _timelines = new BehaviorSubject<Segment[][]>([]);
   private _date = new BehaviorSubject<Date>(new Date());
   private _temp_time: string[][] = [];
   private _bookings = new BehaviorSubject<string>("");
-  private _info = new BehaviorSubject<Booking>({
-    room_id: '',
-    course_id: '',
-    start: new Date(),
-    end: new Date(),
-    status: '',
-    bookings_id: ''
+  private _info = new BehaviorSubject<Info>({
+    booking_id: '',
+    room: -1,
+    info: false,
+    start: '',
+    end: '',
+    index: -1
   })
+  private _users = new BehaviorSubject<User[]>([]);
+  private _info_state = new BehaviorSubject<InfoStates>(InfoStates.Default);
 
   getUserData(): Observable<User> {
     return this._userData.asObservable();
@@ -64,12 +83,48 @@ export class UserService {
     return this._date.asObservable();
   }
 
-  getTimelines(): Observable<string[][]> {
+  getTimelines(): Observable<Segment[][]> {
     return this._timelines.asObservable();
+  }
+
+  getInfo(): Observable<Info> {
+    return this._info.asObservable();
+  }
+
+  getInfoState(): Observable<InfoStates> {
+    return this._info_state.asObservable();
+  }
+
+  getHours(): string[] {
+    return this._hour_markers;
+  }
+
+  getStatus(booking_id: string): number {
+    var obj_bookings: Booking[] = JSON.parse(this._bookings.value);
+    for (var booking of obj_bookings) {
+      if (booking.bookings_id == booking_id) {
+        switch(booking.status) {
+          case "Set":
+            return 0;
+          case "Planned":
+            return 1;
+          case "Preference":
+            return 2;
+          default:
+            return -1;
+        }
+      }
+    }
+    return -1;
+  }
+
+  getPermission(): Observable<number> {
+    return this._permission.asObservable();
   }
 
   setUserData(user: User): void {
     this._userData.next(user);
+    this._permission.next(user.role);
   }
 
   setCourses(courses: Course[]) {
@@ -88,8 +143,36 @@ export class UserService {
     this._date.next(date);
   }
 
-  setTimelines(timelines: string[][]): void {
+  setTimelines(timelines: Segment[][]): void {
     this._timelines.next(timelines);
+  }
+
+  setInfo(booking_id: string, room: number, start: string, end: string, info: boolean, index: number): void {
+    this._info.next({"booking_id": booking_id, "room": room, "start": start, "end": end, "info": info, "index": index});
+  }
+
+  setInfoState(state: InfoStates): void {
+    this._info_state.next(state);
+  }
+
+  addBooking(course_id: string, room_id: string, start: string, end: string) {
+    var token: string | null = this._localService.getItem("user_token");
+    var preference: boolean = (this._userData.value.role < 2);
+    if(token != null) {
+      this._loadDataService.addBooking(course_id, room_id, start, end, token, preference)
+        .subscribe(() => {
+          if(token != null) { //Type guards do not extend into anonymous functions
+            var user: User = this._userData.value;
+            this.clearData();
+            this.requestBaseData(user, token);
+          }
+        })
+    }
+  }
+
+  removeBooking(booking_id: string, token: string): void {
+    this._loadDataService.removeBooking(booking_id, token)
+      .subscribe();
   }
 
   mergeTimelines() {
@@ -100,7 +183,7 @@ export class UserService {
       }
     }
     if (filled == true) {
-      this._timelines.next(this._temp_time);
+      this._timelines.next(this.constructTables(this._temp_time));
     }
   }
 
@@ -112,6 +195,25 @@ export class UserService {
     for(const room of this._rooms.value) {
       this.requestTimeline(room.id, date, token);
     }
+  }
+
+  clearInfo(): void {
+    this._info.next({"booking_id": '', "room": -1, "start": '', "end": '', "info": false, "index": -1});
+  }
+
+  constructTables(timeline: string[][]): Segment[][] {
+    var temp_segm: Segment[][] = [];
+    for(let outer_index = 0; outer_index < timeline.length; outer_index++) {
+      temp_segm.push([]);
+      for(let inner_index = 0; inner_index < timeline[outer_index].length; inner_index++) {
+        var new_segment: Segment = {
+              booking_id: timeline[outer_index][inner_index], 
+              empty: (timeline[outer_index][inner_index] == null) ? true : false, 
+              status: this.getStatus(timeline[outer_index][inner_index])};
+        temp_segm[outer_index].push(new_segment);
+      }
+    }
+    return temp_segm;
   }
 
   clearData() {
@@ -131,7 +233,7 @@ export class UserService {
   }
 
   requestTimeline(room_id: string, date: string, token: string) {
-    this.loadDataService.getTimeline(room_id, date, token)
+    this._loadDataService.getTimeline(room_id, date, token)
       .subscribe({
         next: (value) => {
           if(value.body != null) {
@@ -147,11 +249,11 @@ export class UserService {
   }
 
   requestCourses(): void {
-    this.loadDataService.getCourses()
+    this._loadDataService.getCourses()
     .subscribe({
       next: (value) => {
         if(value.body != null) {
-          this.statusService.setLoadingStatus("Done");
+          this._statusService.setLoadingStatus("Done");
           this.setCourses(JSON.parse(JSON.stringify(value.body)));
         }
       }
@@ -159,11 +261,11 @@ export class UserService {
   }
 
   requestRooms(user_token: string): void {
-    this.loadDataService.getRooms()
+    this._loadDataService.getRooms()
     .subscribe({
       next: (value) => {
         if(value.body != null) {
-            this.statusService.setLoadingStatus("Done");
+            this._statusService.setLoadingStatus("Done");
             this.setRooms(JSON.parse(JSON.stringify(value.body)));
             this.setUpTimelineRequest(new Date().toISOString().split('T')[0], user_token);
 
@@ -173,27 +275,28 @@ export class UserService {
   }
 
   requestUserBookings(user_id: string, user_token: string) {
-    this.loadDataService.getUserBookings(user_id, user_token)
+    console.log(this._userData.value.role);
+    this._loadDataService.getUserBookings(user_id, user_token)
       .subscribe({
         next: (value) => {
           if(value.body != null) {
-            this.statusService.setLoadingStatus("Done");
-            this.setBookings(JSON.parse(value.body));
-            this.router.navigate(['/dashboard']);
+            this._statusService.setLoadingStatus("Done");
+            this.setBookings(JSON.stringify(value.body));
+            this._router.navigate(['/dashboard']);
           }
         }
       })
   }
 
   requestBookings(user_token: string) {
-    this.loadDataService.getAllBookings(user_token)
+    this._loadDataService.getAllBookings(user_token)
       .subscribe({
         next: (value) => {
           if(value.body != null) {
-            this.statusService.setLoadingStatus("Done");
+            this._statusService.setLoadingStatus("Done");
             this.setBookings(JSON.stringify(value.body));
-            this.statusService.setLoadingStatus("Data loaded. Redirecting to dashboard");
-            this.router.navigate(['/dashboard']);
+            this._statusService.setLoadingStatus("Data loaded. Redirecting to dashboard");
+            this._router.navigate(['/dashboard']);
           }
         }
       })
@@ -201,13 +304,17 @@ export class UserService {
 
 
   requestBaseData(user: User, user_token: string): void {
-    this.statusService.setLoadingStatus(`Welcome, ${user.firstName}!`);
+    this._statusService.setLoadingStatus(`Welcome, ${user.firstName}!`);
     this.setUserData(user);
-    this.statusService.setLoadingStatus("Requesting course data ...");
+    this._statusService.setLoadingStatus("Requesting course data ...");
     this.requestCourses();
-    this.statusService.setLoadingStatus("Requesting room data ...");
+    this._statusService.setLoadingStatus("Requesting room data ...");
     this.requestRooms(user_token);
-    this.statusService.setLoadingStatus("Requesting booking data ...");
+    this._statusService.setLoadingStatus("Requesting booking data ...");
+    this.startBookingRequest(user, user_token);
+  }
+
+  startBookingRequest(user: User, user_token: string) {
     if (user.role == 0) {
       this.requestUserBookings(user.userId, user_token);
     } else {
@@ -216,70 +323,70 @@ export class UserService {
   }
 
   init(): void {
-    this.router.navigate(['/loading']);
-    var login: string | null = this.localService.getItem("auto_login");
+    this._router.navigate(['/loading']);
+    var login: string | null = this._localService.getItem("auto_login");
     if(login != null && login == "true") {
-      this.statusService.setLoadingStatus("Getting active user ...");
-      var user_token: string | null = this.localService.getItem("user_token");
+      this._statusService.setLoadingStatus("Getting active user ...");
+      var user_token: string | null = this._localService.getItem("user_token");
       if(user_token != null) {
-        this.statusService.setLoadingStatus("Found. Verifying ...");
+        this._statusService.setLoadingStatus("Found. Verifying ...");
         this.initFromToken(user_token);
       } else {
-        this.statusService.setLoadingStatus("None found \n Redirecting to login");
-        this.router.navigate(['/login']);
+        this._statusService.setLoadingStatus("None found \n Redirecting to login");
+        this._router.navigate(['/login']);
       }
     } else {
-      this.router.navigate(['/login']);
+      this._router.navigate(['/login']);
     }
   }
 
   initFromToken(user_token: string): void {
-      this.loadDataService.verifyToken(user_token)
+      this._loadDataService.verifyToken(user_token)
         .subscribe({
           next: (value) => {
             if(value.ok && value.body != null) {
-              this.statusService.setLoadingStatus("Done. Loading data ...");
+              this._statusService.setLoadingStatus("Done. Loading data ...");
               this.requestBaseData(JSON.parse(JSON.stringify(value.body)), user_token);
             } else {
-              this.statusService.setLoadingStatus("Invalid token \n Redirecting to login");
-              this.localService.deleteItem("user_token");
-              this.router.navigate(['/login']);
+              this._statusService.setLoadingStatus("Invalid token \n Redirecting to login");
+              this._localService.deleteItem("user_token");
+              this._router.navigate(['/login']);
             }
           },
           error: (value) => {
-            this.statusService.setLoadingStatus("Invalid token \n Redirecting to login");
-            this.localService.deleteItem("user_token");
-            this.router.navigate(['/login']);
+            this._statusService.setLoadingStatus("Invalid token \n Redirecting to login");
+            this._localService.deleteItem("user_token");
+            this._router.navigate(['/login']);
           }
         })
     }
 
   initWithoutToken(email: string, password: string, auto: boolean) {
-    this.loadDataService.addToken(email, password)
+    this._loadDataService.addToken(email, password)
       .subscribe({
         next: (value) => {
           if (value != null) {
             var token: UserToken = JSON.parse(JSON.stringify(value.body));
             if(token.tokens != null) {
               if(auto) {
-                this.localService.setItem("auto_login", "true");
+                this._localService.setItem("auto_login", "true");
               } else {
-                this.localService.setItem("auto_login", "false");
+                this._localService.setItem("auto_login", "false");
               }
-              this.localService.setItem("user_token", token.tokens[0]);
+              this._localService.setItem("user_token", token.tokens[0]);
               this.initFromToken(token.tokens[0]);
             }
           }
         },
         error: () => {
-          this.statusService.setLoginStatus("Something has gone wrong. Please try again at a later point");
-          this.router.navigate(['/login']);
+          this._statusService.setLoginStatus("Something has gone wrong. Please try again at a later point");
+          this._router.navigate(['/login']);
         }
       })
   }
 
     checkTokens(tokens: string[]): string {
-      var local_token: string | null = this.localService.getItem("user_token");
+      var local_token: string | null = this._localService.getItem("user_token");
       if(local_token != null) {
         for(let index = 0; index < tokens.length; index++) {
           if(tokens[index] == local_token) {

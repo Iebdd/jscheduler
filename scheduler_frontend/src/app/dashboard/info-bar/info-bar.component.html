@@ -1,3 +1,93 @@
 <div class="info-container">
-    
+    @switch(_info_state) {
+        @case (States.Default) {
+            <div class="default-item">
+                <button (click)="addItem()" class="add">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45.4 45.4" xml:space="preserve">
+                        <path d="M41 19H27V4a4 4 0 1 0-8 0v15H4a4 4 0 0 0 0 8h15v14a4 4 0 0 0 4 4c2 0 4-1 4-4V27h14a4 4 0 0 0 0-8z"/>
+                      </svg>
+                </button>
+            </div>
+        }
+        @case (States.NewCourseRoom) {
+            <div class="description">Which room should the course be in?</div>
+            <div class="room">
+                @for(room of this._rooms; track $index; let index = $index ) {
+                    <div (click)="setRoom(index)" class="room-item flex-item">
+                        {{room.roomName}}
+                    </div>
+                }
+            </div>
+            <div class="flex-item cancel" (click)="this._info_state = States.Default">
+                Cancel
+            </div>
+        }
+        @case (States.NewCourseStart) {
+            <div class="description">When should the course start?</div>
+            <div class="start">
+                @for(timeline of this._timelines[this._info.room]; track $index; let index = $index ) {
+                    @if(timeline.empty) {
+                        <div (click)="setStart(index)" class="start-item flex-item">
+                        {{this._hour_markers[index]}}
+                        </div>
+                    }
+                }
+            </div>
+            <div class="flex-item cancel" (click)="this._info_state = States.Default">
+                Cancel
+            </div>
+        }
+        @case (States.NewCourseEnd) {
+            <div class="description">When should the course end?</div>
+            <div class="end">
+                @for(segment of this._end_timeline; track $index; let index = $index ) {
+                    @if(segment.status != -2) {
+                        <div (click)="setEnd(index)" class="end-item flex-item">
+                            {{this._hour_markers[index]}}
+                        </div>
+                    }
+                }
+            </div>
+            <div class="flex-item cancel" (click)="this._info_state = States.Default">
+                Cancel
+            </div>
+        }
+        @case (States.NewCourseCourse) {
+            <div class="description">Which course is taking place?</div>
+            <div class="course">
+                @for(course of this._courses; track $index; let index = $index ) {
+                    <div (click)="setCourse(index)" class="course-item flex-item">
+                        {{course.courseName}}
+                    </div>
+                }
+            </div>
+            <div class="flex-item cancel" (click)="this._info_state = States.Default">
+                Cancel
+            </div>
+        }
+        @case (States.CourseInfo) {
+            <div class="booking-info">
+                <div class="info">
+                    <div class="description">Booking Information:</div>
+                    <div class="flex-item">In Room: {{this._info_booking.bookings_id | roomName : this._bookings : this._rooms}}</div>
+                    <div class="flex-item">Course Name: {{this._info_booking.bookings_id | courseName : this._bookings : this._courses}}</div>
+                    <div class="flex-item">Start Time: {{this._info_booking.start | date: 'EEEE, d MMMM, y, HH:mm:ss' : 'en-gb'}}</div>
+                    <div class="flex-item">End Time: {{this._info_booking.end | date: 'EEEE, d MMMM, y, HH:mm:ss' : 'en-gb'}}</div>
+                </div>
+                <div class="options">
+                    <div class="flex-item" (click)="enrollStudent()">Enroll</div>
+                    @if (this._permission > 1) {
+                        @if(delete_pressed) {
+                            <div (click)="deleteBooking()" class="flex-item delete">Press again to confirm</div>
+                        } @else {
+                            <div (click)="delete_pressed = true" class="flex-item delete">Delete</div>
+                        }
+                    }
+                </div>
+                <div class="flex-item cancel" (click)="this._info_state = States.Default">
+                    Back
+                </div>
+            </div>
+        }
+    }
 </div>

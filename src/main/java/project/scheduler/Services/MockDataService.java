@@ -142,8 +142,8 @@ public class MockDataService {
             map.clear();
         }
         for(int outer_i = 0; outer_i < courses.length; outer_i++) {
-            map.add("course_id", courses_obj.get(courses.length - 1 - outer_i));
-            map.add("room_id", rooms_obj.get(courses.length - 1 - outer_i));
+            map.add("course_id", courses_obj.get(outer_i));
+            map.add("room_id", rooms_obj.get(outer_i));
             map.add("start", times2[outer_i][0]);
             map.add("end", times2[outer_i][1]);
 

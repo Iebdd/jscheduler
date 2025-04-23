@@ -64,3 +64,12 @@ export interface Mouseover {
   room: number;
   index: number;
 }
+
+export interface Info {
+  booking_id: string;
+  room: number;
+  info: boolean;
+  start: string;
+  end: string;
+  index: number;
+}

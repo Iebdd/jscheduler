@@ -7,6 +7,7 @@ import { LocalService } from '../../Services/local.service';
 import { Router } from '@angular/router';
 import { StatusService } from '../../Services/status.service';
 import { CourseNamePipe } from '../../Pipes/course-name.pipe';
+import { InfoStates } from '../../model/enums';
 
 @Component({
   selector: 'app-main-body',
@@ -32,6 +33,8 @@ export class MainBodyComponent implements OnInit {
    this._screenWidth = window.innerWidth;
 }
 
+protected _hour_markers: string[] = [];
+
   protected _active_user: User = {
     userId: '',
     role: 0,
@@ -52,21 +55,7 @@ export class MainBodyComponent implements OnInit {
     room: -1,
     index: -1
   }
-  protected _hour_markers: string[] = [
-    "7:00", "7:15", "7:30", "7:45",
-    "8:00","8:15", "8:30", "8:45", 
-    "9:00","9:15", "9:30", "8:45", 
-    "10:00","10:15", "10:30", "10:45", 
-    "11:00","11:15", "11:30", "11:45",  
-    "12:00","12:15", "12:30", "12:45",  
-    "13:00","13:15", "13:30", "13:45",  
-    "14:00","14:15", "14:30", "14:45",  
-    "15:00","15:15", "15:30", "15:45",  
-    "16:00","16:15", "16:30", "16:45",  
-    "17:00","17:15", "17:30", "17:45",  
-    "18:00","18:15", "18:30", "18:45",  
-    "19:00","19:15", "19:30", "19:45",  
-    "20:00"];
+
 
   protected _sideBorder = {'border-top': "0", 'border-left': "2px black solid", 'border-right': "2px black solid", 'border-bottom': "0"};
   protected _topBorder = {'border-top': "2px black solid", 'border-left': "2px black solid", 'border-right': "2px black solid", 'border-bottom': "0"};
@@ -76,57 +65,35 @@ export class MainBodyComponent implements OnInit {
     this._timelines = [];
     var next_date: Date = new Date(this._date.setDate(this._date.getDate() - 1));
     this.getNewTimeline(next_date);
+    console.log(this._timelines);
   }
 
   nextDay() {
     this._timelines = [];
+    this._userService.setInfoState(InfoStates.Default);
+    this._userService.clearInfo();
     var next_date: Date = new Date(this._date.setDate(this._date.getDate() + 1));
     this.getNewTimeline(next_date);
   }
 
   setHover(booking_id: string, room: number, index: number) {
-    console.log(`ID: ${booking_id} - room: ${room} - index: ${index}`);
     this._mouseover = {"booking_id": booking_id, "room": room, "index": index};
   }
 
-  newCourse(index: number, time: string) {
-    console.log()
+  newCourse(room: number, index: number) {
+    this._userService.setInfo('', room, '', '', false, index);
+    this._userService.setInfoState(InfoStates.NewCourseEnd);
   }
 
-  courseInfo(course_id: string) {
-    console.log(course_id);
-  }
-
-  constructTables(timeline: string[][]) {
-    for(let outer_index = 0; outer_index < timeline.length; outer_index++) {
-      this._timelines.push([]);
-      for(let inner_index = 0; inner_index < timeline[outer_index].length; inner_index++) {
-        var new_segment: Segment = {
-              booking_id: timeline[outer_index][inner_index], 
-              empty: (timeline[outer_index][inner_index] == null) ? true : false, 
-              status: this.getStatus(timeline[outer_index][inner_index])};
-        this._timelines[outer_index].push(new_segment);
+  bookingInfo(booking_id: string, room: number) {
+    var bookings: Booking[] = JSON.parse(this._bookings);
+    for(var booking of bookings) {
+      if(booking.bookings_id == booking_id) {
+        this._userService.setInfo(booking_id, room, new Date(booking.start).toISOString(),new Date(booking.end).toISOString(), true, -1);
+        this._userService.setInfoState(InfoStates.CourseInfo);
+        return;
       }
     }
-  }
-
-  getStatus(bookings_id: string): number {
-    var obj_bookings: Booking[] = JSON.parse(this._bookings);
-    for (var booking of obj_bookings) {
-      if (booking.bookings_id == bookings_id) {
-        switch(booking.status) {
-          case "Set":
-            return 0;
-          case "Planned":
-            return 1;
-          case "Preference":
-            return 2;
-          default:
-            return -1;
-        }
-      }
-    }
-    return -1;
   }
 
   getNewTimeline(next_date: Date) {
@@ -177,7 +144,11 @@ export class MainBodyComponent implements OnInit {
 
   getTimeline(): void {
     this._userService.getTimelines()
-      .subscribe(timeline => this.constructTables(timeline));
+      .subscribe(timeline => this._timelines = timeline);
+  }
+
+  getHours(): void {
+    this._hour_markers = this._userService.getHours()
   }
 
   ngOnInit(): void {
@@ -187,5 +158,6 @@ export class MainBodyComponent implements OnInit {
     this.getBookings();
     this.getDate();
     this.getTimeline();
+    this.getHours();
   }
 }

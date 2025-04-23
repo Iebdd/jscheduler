@@ -125,7 +125,7 @@ public class ReadController {
    * @return  An Iterable containing all courses the user is enrolled in
    */
   @GetMapping(path="/userBookings/{user_id}")
-  public ResponseEntity<Iterable<Booking>> getInscribedCourses(@PathVariable UUID user_id, @RequestHeader("Authorization") String header) {
+  public ResponseEntity<String> getInscribedCourses(@PathVariable UUID user_id, @RequestHeader("Authorization") String header) {
     String token = permissionService.validAuthHeader(header);
     if(token.length() == 0) {
       return new ResponseEntity<>(new LinkedMultiValueMap<>(), HttpStatus.NO_CONTENT);
@@ -133,7 +133,7 @@ public class ReadController {
     if(!permissionService.validRole(token, user_id, Permissions.Admin)) {
       return new ResponseEntity<>(new LinkedMultiValueMap<>(), HttpStatus.NO_CONTENT);
     }
-    return bookingService.findAllBookingsByUser(user_id);
+    return ResponseEntity.ok(StringUtil.toString(bookingService.findAllBookingsByUser(user_id)));
   }
 
   /**

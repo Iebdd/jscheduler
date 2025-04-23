@@ -85,14 +85,12 @@ export class LoadDataService {
   }
 
   addRoom(roomName: string, token: string): Observable<HttpResponse<string>> {
-    let values = {"roomName": roomName};
     const params = new HttpParams()
       .append("roomName", roomName);
     return this.post(`${this._URI}/add/room`, params, token);     //Returns Room object
   }
 
   addBooking(course_id: string, room_id: string, start: string, end: string, token: string, preference: boolean): Observable<HttpResponse<string>> {
-    let values = {"course_id": course_id, "room_id": room_id, "start": start, "end": end};
     const params = new HttpParams()
       .append("course_id", course_id)
       .append("room_id", room_id)
@@ -106,7 +104,6 @@ export class LoadDataService {
   }
   
   addInscription(user_id: string, course_id: string, token: string): Observable<HttpResponse<string>> {
-    let values = {"user_id": user_id, "course_id": course_id};
     const params = new HttpParams()
       .append("user_id", user_id)
       .append("course_id", course_id);
@@ -116,7 +113,6 @@ export class LoadDataService {
   //Delete
 
   removeInscription(user_id: string, course_id: string, token: string): Observable<HttpResponse<string>> {
-    let values = {"user_id": user_id, "course_id": course_id};
     const params = new HttpParams()
       .append("user_id", user_id)
       .append("course_id", course_id);
@@ -124,7 +120,6 @@ export class LoadDataService {
   }
 
   removeBooking(booking_id: string, token: string): Observable<HttpResponse<string>> {
-    let values = {"booking_id": booking_id};
     const params = new HttpParams()
       .append("booking_id", booking_id);
     return this.post(`${this._URI}/remove/booking`, params, token);     //Returns number
@@ -156,7 +151,7 @@ export class LoadDataService {
     return this.get(`${this._URI}/read/roomBookings/${room_id}/${day}`);
   }
 
-  getUserBookings(user_id: string, token: string): Observable<HttpResponse<string>> {
+  getUserBookings(user_id: string, token: string): Observable<HttpResponse<Object>> {
     return this.get(`${this._URI}/read/userBookings/${user_id}`, token);  //Returns Booking array
   }
 
@@ -171,7 +166,6 @@ export class LoadDataService {
   //Update
 
   updatePasswordViaPassword(old_password: string, new_password: string, user_id: string): Observable<HttpResponse<string>> {
-    let values = {"old_password": old_password, "new_password": new_password, "user_id": user_id};
     const params = new HttpParams()
       .append("old_password", old_password)
       .append("new_password", new_password)
@@ -180,7 +174,6 @@ export class LoadDataService {
   }
 
   updatePasswordViaToken(new_password: string, user_id: string, token: string): Observable<HttpResponse<string>> {
-    let values = {"new_password": new_password, "user_id": user_id};
     const params = new HttpParams()
       .append("new_password", new_password)
       .append("user_id", user_id);
@@ -188,7 +181,6 @@ export class LoadDataService {
   }
 
   updateBookingStatus(new_status: Status, booking_id: string, token: string): Observable<HttpResponse<string>> {
-    let values = {"new_status": new_status, "booking_id": booking_id};
     const params = new HttpParams()
       .append("new_status", new_status)
       .append("booking_id", booking_id);
