@@ -75,4 +75,46 @@ public interface UserRepository extends CrudRepository<User, UUID> {
      */
     @NativeQuery(value = "SELECT EXISTS (SELECT 1 FROM users u WHERE u.email = ?1)")
     Integer checkByEmail(String email);
+
+    /**
+     * Updates a user's first name
+     * 
+     * @param firstName  The new first name
+     * @param user_id   The id of the user in question as a UUID object
+     */
+    @Modifying
+    @NativeQuery(value = "UPDATE users u SET first_name = ?1 WHERE u.user_id = ?2")
+    void updateFirstName(String firstName, UUID user_id);
+
+    /**
+     * Updates a user's last name
+     * 
+     * @param lastName  The new last name
+     * @param user_id   The id of the user in question as a UUID object
+     */
+    @Modifying
+    @NativeQuery(value = "UPDATE users u SET last_name = ?1 WHERE u.user_id = ?2")
+    void updateLastName(String lastName, UUID user_id);
+
+    /**
+     * Updates a user's email
+     * 
+     * @param email  The new email
+     * @param user_id   The id of the user in question as a UUID object
+     */
+    @Modifying
+    @NativeQuery(value = "UPDATE users u SET email = ?1 WHERE u.user_id = ?2")
+    void updateEmail(String email, UUID user_id);
+
+    /**
+     * Updates a user's role
+     * 
+     * @param role  The new role
+     * @param user_id   The id of the user in question as a UUID object
+     */
+    @Modifying
+    @NativeQuery(value = "UPDATE users u SET role = ?1 WHERE u.user_id = ?2")
+    void updateRole(Integer role, UUID user_id);
+
+
 }

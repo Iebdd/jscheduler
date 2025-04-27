@@ -27,14 +27,19 @@
     font-size: 30pt;
     font-family: Copeland;
     color: var(--secondary-colour);
+    flex-grow: 40;
 }
 
-.logout {
+.but {
     height: 50px;
     width: 150px;
 }
 
-.logout button {
+.but.management {
+    margin-right: 50px;
+}
+
+.but button {
     color: var(--secondary-colour);
     background: none;
     border-top: 0;
@@ -48,14 +53,14 @@
     transition: ease 0.35s;
 }
 
-.logout button:hover {
+.but button:hover {
     background: var(--secondary-colour);
     color: #000;
     border: 1px black solid;
     transition: ease 0.35s;
 }
 
-.logout button:active {
+.but button:active {
     top: 2px;
     left: 1px;
     box-shadow: none;

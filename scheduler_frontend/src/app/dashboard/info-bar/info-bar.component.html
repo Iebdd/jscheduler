@@ -2,12 +2,44 @@
     @switch(_info_state) {
         @case (States.Default) {
             <div class="default-item">
-                <button (click)="addItem()" class="add">
+                <button (click)="newMenu()" class="add">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45.4 45.4" xml:space="preserve">
                         <path d="M41 19H27V4a4 4 0 1 0-8 0v15H4a4 4 0 0 0 0 8h15v14a4 4 0 0 0 4 4c2 0 4-1 4-4V27h14a4 4 0 0 0 0-8z"/>
                       </svg>
                 </button>
             </div>
+        }
+        @case(States.Menu) {
+            <div class="description">What would you like to do?</div>
+            <div class="menu">
+                <div (click)="this._info_state=States.EnrollCourse" class="flex-item">Enroll in a course</div>
+                @if(this._active_user.role == 1) {
+                    <div class="flex-item" (click)="this._info_state=States.NewCourseRoom" >Add a Preference</div>
+                } @else if(this._active_user.role == 2) {
+                    <div class="flex-item" (click)="this._info_state=States.NewCourseRoom">Book a Course</div>
+                    <div class="flex-item" (click)="this._info_state=States.NewRoom">Add a Room</div>
+                    <div class="flex-item" (click)="this._info_state=States.NewCourse">Add a Course</div>
+                }
+            </div>
+            <div class="flex-item cancel" (click)="this._info_state = States.Default">
+                Back
+            </div>
+        }
+        @case(States.NewCourse) {
+            <div class="description">What should the course be called?</div>
+            <div class="text-input flex-item">
+                <input (keyup.enter)="addCourse()" [(ngModel)]="this._input_field" name="courseName" type="text" placeholder="Course name" required>
+            </div>
+            <div class="flex-item" (click)="addCourse()">Create</div>
+            <div class="flex-item cancel" (click)="clearInput(States.Menu)">Back</div>
+        }
+        @case(States.NewRoom) {
+            <div class="description">What should the room be called?</div>
+            <div class="text-input flex-item">
+                    <input (keyup.enter)="addCourse()" [(ngModel)]="this._input_field" name="roomName"  type="text" placeholder="Room Name" required>
+            </div>
+            <div class="flex-item" (click)="addRoom()">Create</div>
+            <div class="flex-item cancel" (click)="clearInput(States.Menu)">Back</div>
         }
         @case (States.NewCourseRoom) {
             <div class="description">Which room should the course be in?</div>
@@ -56,7 +88,7 @@
             <div class="description">Which course is taking place?</div>
             <div class="course">
                 @for(course of this._courses; track $index; let index = $index ) {
-                    <div (click)="setCourse(index)" class="course-item flex-item">
+                    <div (click)="setBooking(index)" class="course-item flex-item">
                         {{course.courseName}}
                     </div>
                 }
@@ -71,12 +103,17 @@
                     <div class="description">Booking Information:</div>
                     <div class="flex-item">In Room: {{this._info_booking.bookings_id | roomName : this._bookings : this._rooms}}</div>
                     <div class="flex-item">Course Name: {{this._info_booking.bookings_id | courseName : this._bookings : this._courses}}</div>
+                    <div class="flex-item">Status: {{this._info_booking.status}} </div>
                     <div class="flex-item">Start Time: {{this._info_booking.start | date: 'EEEE, d MMMM, y, HH:mm:ss' : 'en-gb'}}</div>
                     <div class="flex-item">End Time: {{this._info_booking.end | date: 'EEEE, d MMMM, y, HH:mm:ss' : 'en-gb'}}</div>
                 </div>
                 <div class="options">
-                    <div class="flex-item" (click)="enrollStudent()">Enroll</div>
+                    <div class="flex-item" (click)="enrollStudent('')">Enroll</div>
+                    <div class="flex-item" (click)="unenrollStudent('')">Unenroll</div>
                     @if (this._permission > 1) {
+                        @if(this._info_booking.status == 'Preference') {
+                            <div (click)="confirmPreference(this._info_booking.bookings_id)" class="flex-item confirm">Confirm</div>
+                        }
                         @if(delete_pressed) {
                             <div (click)="deleteBooking()" class="flex-item delete">Press again to confirm</div>
                         } @else {
@@ -84,10 +121,127 @@
                         }
                     }
                 </div>
-                <div class="flex-item cancel" (click)="this._info_state = States.Default">
+                <div class="flex-item cancel" (click)="clearInput(States.Menu)">
                     Back
                 </div>
             </div>
         }
+        @case (States.EnrollCourse) {
+            <div class="description">Which course should be enrolled in?</div>
+            <div class="enroll">
+                @for(course of this._courses; track $index) {
+                    <div (click)="setEnrolmentCourse(course.id)" class="flex-item">{{course.courseName}}</div>
+                }
+            </div>
+            <div class="flex-item cancel" (click)="this._info_state = States.Menu">
+                Back
+            </div>
+        }
+        @case (States.EnrollStudent) {
+            <div class="description">Which student would you like to enroll?</div>
+            <div class="enroll">
+                @for(user of this._users; track $index) {
+                    @if(user.role == 0) {
+                        <div (click)="enrollStudent(user.user_id)" class="flex-item">{{user.firstName}} {{user.lastName}}</div>
+                    }
+                }
+            </div>
+            <div class="flex-item cancel" (click)="clearInput(States.Menu)">
+                Cancel
+            </div>
+        }
+        @case (States.UnenrollStudent) {
+            <div class="description">Which student would you like to unenroll?</div>
+            <div class="enroll">
+                @for(user of this._users; track $index) {
+                    @if(user.role == 0) {
+                        <div (click)="unenrollStudent(user.user_id)" class="flex-item">{{user.firstName}} {{user.lastName}}</div>
+                    }
+                }
+            </div>
+            <div class="flex-item cancel" (click)="clearInput(States.Menu)">
+                Back
+            </div>
+        }
+        @case (States.Management) {
+            <div class="description">User Management</div>
+            <div class="management">
+                @for(user of this._users; track $index) {
+                    <div (click)="userDetail(user)" class="flex-item">{{user.firstName}} {{user.lastName}} - {{user.email}}</div>
+                }
+            </div>
+            <div class="flex-item cancel" (click)="this._info_state = States.Default">
+                Back
+            </div>
+        }
+        @case (States.ManagementDetail) {
+            <div class="description">Details for User: {{this._user_detail.firstName}} {{this._user_detail.lastName}} - {{this._user_detail.email}}</div>
+            <div class="management-detail">
+                <div (click)="this._info_state = States.ManagementFirstName" class="flex-item">First Name: {{this._user_detail.firstName}}</div>
+                <div (click)="this._info_state = States.ManagementLastName" class="flex-item">Last Name: {{this._user_detail.lastName}}</div>
+                <div (click)="this._info_state = States.ManagementEmail" class="flex-item">Email: {{this._user_detail.email}}</div>
+                <div (click)="this._info_state = States.ManagementRole" class="flex-item">Role: {{(this._user_detail.role == 0) ? 'Student' : (this._user_detail.role == 1) ? 'Assistant' : 'Admin'}}</div>
+                <div (click)="this._info_state = States.ManagementPassword" class="flex-item">Set new Password</div>
+            </div>
+            <div class="flex-item cancel" (click)="clearDetail()">
+                Back
+            </div>
+        }
+        @case (States.ManagementFirstName) {
+            <div class="description">Enter a new First Name</div>
+            <div class="detail text-input flex-item">
+                <input [(ngModel)]="this._input_field" name="firstName" type="text" placeholder="New First Name" required>
+            </div>
+            <div class="flex-item" (click)="updateFirstName()">Change</div>
+            <div class="flex-item cancel" (click)="clearInput(States.ManagementDetail)">Back</div>
+        }
+        @case (States.ManagementLastName) {
+            <div class="description">Enter a new Last Name</div>
+            <div class="detail text-input flex-item">
+                <input [(ngModel)]="this._input_field" name="lastName" type="text" placeholder="New Last Name" required>
+            </div>
+            <div class="flex-item" (click)="updateLastName()">Change</div>
+            <div class="flex-item cancel" (click)="clearInput(States.ManagementDetail)">Back</div>
+        }
+        @case (States.ManagementEmail) {
+            <div class="description">Enter a new Email Address</div>
+            <div class="detail text-input flex-item">
+                <input [(ngModel)]="this._input_field" name="email" type="text" placeholder="New Email" required>
+            </div>
+            <div class="flex-item" (click)="updateEmail()">Change</div>
+            <div class="flex-item cancel" (click)="clearInput(States.ManagementDetail)">Back</div>
+        }
+        @case (States.ManagementRole) {
+            <div class="description">Choose a new Role for {{this._user_detail.firstName}}</div>
+            <div class="detail">
+                @if(this._user_detail.role == 0) {
+                    <div (click)="updateRole(2)" class="flex-item">Assign Admin</div>
+                    <div (click)="updateRole(1)" class="flex-item">Assign Assistant</div>
+                } @else if(this._user_detail.role == 1) {
+                    <div (click)="updateRole(0)" class="flex-item">Assign Student</div>
+                    <div (click)="updateRole(2)" class="flex-item">Assign Admin</div>
+                } @else if(this._user_detail.role == 2) {
+                    @if(this._active_user.user_id != this._user_detail.user_id) {
+                        <div (click)="updateRole(1)" class="flex-item">Assign Assistant</div>
+                        <div (click)="updateRole(0)" class="flex-item">Assign Student</div>
+                    } @else {
+                        <div  class="flex-item no-hover">Unable to strip own User of Admin rights</div>
+                    }
+                }
+
+            </div>
+            <div class="flex-item cancel" (click)="clearInput(States.ManagementDetail)">Back</div>
+        }
+        @case (States.ManagementPassword) {
+            <div class="description">Enter a new Password</div>
+            <div class="new-course text-input flex-item">
+                <input [(ngModel)]="this._input_field" name="password" type="text" placeholder="New Password" required>
+            </div>
+            <div class="flex-item" (click)="updatePassword()">Change</div>
+            <div class="flex-item cancel" (click)="clearInput(States.ManagementDetail)">Back</div>
+        }
+    }
+    @if(this._dashboard_status != '') {
+        <div class="status">{{this._dashboard_status}}</div>
     }
 </div>

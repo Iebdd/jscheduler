@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
 
+/**
+ * Exchanges data with the localStorage
+ */
 @Injectable({
   providedIn: 'root'
 })

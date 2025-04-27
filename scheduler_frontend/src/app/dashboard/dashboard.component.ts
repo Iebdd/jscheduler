@@ -6,6 +6,9 @@ import { InfoBarComponent } from "./info-bar/info-bar.component";
 import { MainBodyComponent } from "./main-body/main-body.component";
 import { TopBarComponent } from "./top-bar/top-bar.component";
 
+/**
+ * Provides the dashbiard, the main view after logging in
+ */
 @Component({
   selector: 'app-dashboard',
   imports: [InfoBarComponent, MainBodyComponent, TopBarComponent],

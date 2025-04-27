@@ -3,6 +3,9 @@ import { HttpClient, HttpHeaders, HttpParams, HttpResponse} from '@angular/commo
 import { Booking, Course, Room, Status, User, UserBooking, UserToken} from '../model/interfaces';
 import { Observable} from 'rxjs';
 
+/**
+ * Loads the data needed
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -135,6 +138,10 @@ export class LoadDataService {
     return this.get(`${this._URI}/read/courses`);     //Return Course array
   }
 
+  getUsers(token: string): Observable<HttpResponse<string>> {
+    return this.get(`${this._URI}/read/users`, token);  //Return a User array
+  }
+
   getRoomIdByName(name: string): Observable<HttpResponse<string>> {     //Returns UUID
     return this.get(`${this._URI}/read/room/${name}`);
   }
@@ -163,6 +170,10 @@ export class LoadDataService {
     return this.get(`${this._URI}/read/timeline/${room_id}/${date}`, token); //Returns string array
   }
 
+  getInscriptions(token: string): Observable<HttpResponse<string>> {
+    return this.get(`${this._URI}/read/inscriptions`, token);
+  }
+
   //Update
 
   updatePasswordViaPassword(old_password: string, new_password: string, user_id: string): Observable<HttpResponse<string>> {
@@ -170,17 +181,17 @@ export class LoadDataService {
       .append("old_password", old_password)
       .append("new_password", new_password)
       .append("user_id", user_id);
-    return this.patch(`${this._URI}/update/password`, params);
+    return this.patch(`${this._URI}/update/password/verify`, params);
   }
 
   updatePasswordViaToken(new_password: string, user_id: string, token: string): Observable<HttpResponse<string>> {
     const params = new HttpParams()
       .append("new_password", new_password)
       .append("user_id", user_id);
-    return this.patch(`${this._URI}/update/password`, params, token);
+    return this.patch(`${this._URI}/update/password/token`, params, token);
   }
 
-  updateBookingStatus(new_status: Status, booking_id: string, token: string): Observable<HttpResponse<string>> {
+  updateBookingStatus(new_status: string, booking_id: string, token: string): Observable<HttpResponse<string>> {
     const params = new HttpParams()
       .append("new_status", new_status)
       .append("booking_id", booking_id);
@@ -190,6 +201,26 @@ export class LoadDataService {
   updateToken(user_id: string, token: string): Observable<HttpResponse<string>> {
     const params = new HttpParams().append("user_id", user_id);
     return this.patch(`${this._URI}/update/token`, params, token);    //Returns boolean
+  }
+
+  updateFirstName(firstName: string, user_id: string, token: string) {
+    const params = new HttpParams().append("first_name", firstName).append("user_id", user_id);
+    return this.patch(`${this._URI}/update/firstName`, params, token);
+  }
+
+  updateLastName(lastName: string, user_id: string, token: string) {
+    const params = new HttpParams().append("last_name", lastName).append("user_id", user_id);
+    return this.patch(`${this._URI}/update/lastName`, params, token);
+  }
+
+  updateEmail(email: string, user_id: string, token: string) {
+    const params = new HttpParams().append("email", email).append("user_id", user_id);
+    return this.patch(`${this._URI}/update/email`, params, token);
+  }
+
+  updateRole(role: number, user_id: string, token: string) {
+    const params = new HttpParams().append("role", role).append("user_id", user_id);
+    return this.patch(`${this._URI}/update/role`, params, token);
   }
 
   //Verify

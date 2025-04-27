@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.inject.Inject;
 import project.scheduler.Services.BookingService;
 import project.scheduler.Services.CourseService;
+import project.scheduler.Services.InscriptionService;
 import project.scheduler.Services.PermissionService;
 import project.scheduler.Services.PermissionService.Permissions;
 import project.scheduler.Services.RoomService;
@@ -45,6 +46,8 @@ public class ReadController {
   private RoomService roomService;
   @Inject
   private UserService userService;
+  @Inject
+  private InscriptionService inscriptionService;
 
   /**
    *  Returns an Iterable containing all Rooms currently in the database
@@ -156,16 +159,44 @@ public class ReadController {
     return ResponseEntity.ok(StringUtil.toString(bookingService.getAllBookings()));
   }
 
+  /**
+   *  Returns all Users without their passwords
+   * 
+   * @param header     A Bearer Token containing an authentication token (Authorization: Bearer {token}) Token contains {@value PermissionService#TOKEN_LENGTH} upper or lower case letters, or numbers <p>
+   *                   Requires Assistant level permissions
+   * 
+   * @return  A JSON string containing all users
+   */
   @GetMapping(path="/users")
   public ResponseEntity<String> getUsers(@RequestHeader("Authorization") String header) {
     String token = permissionService.validAuthHeader(header);
     if(token.length() == 0) {
       return new ResponseEntity<>(new LinkedMultiValueMap<>(), HttpStatus.NO_CONTENT);
     }
-    if(!permissionService.validRole(token, Permissions.Admin)) {
+    if(!permissionService.validRole(token, Permissions.Assistant)) {
       return new ResponseEntity<>(new LinkedMultiValueMap<>(), HttpStatus.NO_CONTENT);
     }
-    return ResponseEntity.ok(StringUtil.toString(userService.getAllUsers()));
+    return ResponseEntity.ok(StringUtil.toString(userService.getAllUsers()));   //Omits the password
+  }
+
+  /**
+   *  Returns all Inscriptions
+   * 
+   * @param header     A Bearer Token containing an authentication token (Authorization: Bearer {token}) Token contains {@value PermissionService#TOKEN_LENGTH} upper or lower case letters, or numbers <p>
+   *                   Requires Assistant level permissions
+   * 
+   * @return  A JSON string containing all inscriptions
+   */
+  @GetMapping(path="/inscriptions")
+  public ResponseEntity<String> getInscriptions(@RequestHeader("Authorization") String header) {
+    String token = permissionService.validAuthHeader(header);
+    if(token.length() == 0) {
+      return new ResponseEntity<>(new LinkedMultiValueMap<>(), HttpStatus.NO_CONTENT);
+    }
+    if(!permissionService.validRole(token, Permissions.Assistant)) {
+      return new ResponseEntity<>(new LinkedMultiValueMap<>(), HttpStatus.NO_CONTENT);
+    }
+    return ResponseEntity.ok(StringUtil.toString(inscriptionService.getAllInscriptions()));
   }
 
   /**

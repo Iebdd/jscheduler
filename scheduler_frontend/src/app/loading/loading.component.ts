@@ -1,6 +1,9 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { StatusService } from '../Services/status.service';
 
+/**
+ * Provides the (brief) loading view
+ */
 @Component({
   selector: 'app-loading',
   imports: [],

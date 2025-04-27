@@ -34,16 +34,16 @@ public class InscriptionService {
      * 
      * @return  A String containing feedback on the success or failure of the operation
      */
-    public ResponseEntity<String> remove(UUID user_id, UUID course_id) {
+    public ResponseEntity<Boolean> remove(UUID user_id, UUID course_id) {
         try {
             int rows = inscriptionRepository.deleteByIds(user_id, course_id);
             if(rows == 0) {
-              return new ResponseEntity<>(String.format("Could not remove User: %s from Course: %s", user_id, course_id), HttpStatus.INTERNAL_SERVER_ERROR);
+              return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
             } else {
-              return ResponseEntity.ok(String.format("Removed User: %s from Course: %s", user_id, course_id));
+              return ResponseEntity.ok(true);
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(String.format("Could not remove User: %s from Course: %s", user_id, course_id), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -93,6 +93,10 @@ public class InscriptionService {
             return bookings;
         }
         return new UserBooking();
+    }
+
+    public Iterable<Inscription> getAllInscriptions() {
+        return inscriptionRepository.findAll();
     }
     
 }

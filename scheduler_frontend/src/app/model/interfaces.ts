@@ -24,7 +24,7 @@ export interface User {
     firstName: string;
     lastName:  string;
     email:     string;
-    userId:    string;
+    user_id:    string;
 }
 
 export interface Booking {

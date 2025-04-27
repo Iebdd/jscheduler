@@ -1,12 +1,16 @@
 import { inject, Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { Booking, Course, Info, Room, Segment, User, UserToken } from '../model/interfaces';
+import { Booking, Course, Info, Inscription, Room, Segment, User, UserBooking, UserToken } from '../model/interfaces';
 import { LoadDataService } from './load-data.service';
 import { LocalService } from './local.service';
 import { Router } from '@angular/router';
 import { StatusService } from './status.service';
 import { InfoStates } from '../model/enums';
+import { CourseNamePipe } from '../Pipes/course-name.pipe';
 
+/**
+ * Provides data to and from the user
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -21,7 +25,7 @@ export class UserService {
 
   private _userData = new BehaviorSubject<User>(
     {
-      userId: '',
+      user_id: '',
       role: 0,
       firstName: '',
       lastName: '',
@@ -61,6 +65,7 @@ export class UserService {
     index: -1
   })
   private _users = new BehaviorSubject<User[]>([]);
+  private _inscriptions = new BehaviorSubject<Inscription[]>([]);
   private _info_state = new BehaviorSubject<InfoStates>(InfoStates.Default);
 
   getUserData(): Observable<User> {
@@ -118,8 +123,29 @@ export class UserService {
     return -1;
   }
 
+  convertStatus(status: string): number {
+    switch(status) {
+      case 'Set':
+        return 0;
+      case 'Planned':
+        return 1;
+      case 'Preference':
+        return 2;
+      default:
+        return -1;
+    }
+  }
+
+  getUsers(): Observable<User[]> {
+    return this._users.asObservable();
+  }
+
   getPermission(): Observable<number> {
     return this._permission.asObservable();
+  }
+
+  getInscriptions(): Observable<Inscription[]> {
+    return this._inscriptions.asObservable();
   }
 
   setUserData(user: User): void {
@@ -155,16 +181,86 @@ export class UserService {
     this._info_state.next(state);
   }
 
+  setUsers(users: User[]): void {
+    this._users.next(users);
+  }
+
+  setInscriptions(inscriptions: Inscription[]): void {
+    this._inscriptions.next(inscriptions);
+  }
+
   addBooking(course_id: string, room_id: string, start: string, end: string) {
     var token: string | null = this._localService.getItem("user_token");
     var preference: boolean = (this._userData.value.role < 2);
     if(token != null) {
       this._loadDataService.addBooking(course_id, room_id, start, end, token, preference)
-        .subscribe(() => {
-          if(token != null) { //Type guards do not extend into anonymous functions
-            var user: User = this._userData.value;
-            this.clearData();
-            this.requestBaseData(user, token);
+        .subscribe({
+          next: (value) => {
+            if(token != null) { //Type guards do not extend into anonymous functions
+              this.requestNewData(token);
+            }
+          }
+        })
+    }
+  }
+
+  addInscription(user_id: string, course_id: string): void {
+    var token: string | null = this._localService.getItem("user_token");
+    if(token != null) {
+      this._loadDataService.addInscription(user_id, course_id, token)
+        .subscribe({
+          next: (value) => {
+            if(this._userData.value.role < 1 && token != null) {
+              this.requestNewData(token);
+            }
+          },
+          error: (error) => {
+            console.log(error);
+            this._statusService.setDashboardStatus("This user is already enrolled in this course");
+          }
+        })
+    }
+  }
+
+  addCourse(course_name: string) {
+    var token: string | null = this._localService.getItem("user_token");
+    if(token != null) {
+      this._loadDataService.addCourse(course_name, token)
+        .subscribe({
+          next: (value) => {
+            if(token != null) {
+              this.requestNewData(token);
+            }
+        }})
+    }
+  }
+
+  addRoom(room_name: string) {
+    var token: string | null = this._localService.getItem("user_token");
+    if(token != null) {
+      this._loadDataService.addRoom(room_name, token)
+        .subscribe({
+          next: (value) => {
+            if(token != null) {
+              this.requestNewData(token);
+            }
+        }})
+    }
+  }
+
+  removeInscription(user_id: string, course_id: string): void {
+    var token: string | null = this._localService.getItem("user_token");
+    if(token != null) {
+      this._loadDataService.removeInscription(user_id, course_id, token)
+        .subscribe({
+          next: (value) => {
+            if(this._userData.value.role < 1 && token != null) {
+              this.requestNewData(token);
+            }
+          },
+          error: (error) => {
+            console.log(error);
+            this._statusService.setDashboardStatus("This user is not enrolled in this course");
           }
         })
     }
@@ -173,7 +269,84 @@ export class UserService {
   removeBooking(booking_id: string, token: string): void {
     this._loadDataService.removeBooking(booking_id, token)
       .subscribe();
+      this.requestNewData(token);
   }
+
+  updateBooking(new_status: string, booking_id: string) {
+    var token: string | null = this._localService.getItem("user_token");
+    if(token != null) {
+      this._loadDataService.updateBookingStatus(new_status, booking_id, token)
+        .subscribe(() => {
+          if(token != null) {
+            this.requestNewData(token);
+          }
+        });
+    }
+  }
+
+  /////
+
+  updateFirstName(first_name: string, user_id: string) {
+    var token: string | null = this._localService.getItem("user_token");
+    if(token != null) {
+      this._loadDataService.updateFirstName(first_name, user_id, token)
+        .subscribe(() => {
+          if(token != null) {
+            this.requestNewData(token);
+          }
+        });
+    }
+  }
+
+  updateLastName(last_name: string, user_id: string) {
+    var token: string | null = this._localService.getItem("user_token");
+    if(token != null) {
+      this._loadDataService.updateLastName(last_name, user_id, token)
+        .subscribe(() => {
+          if(token != null) {
+            this.requestNewData(token);
+          }
+        });
+    }
+  }
+ 
+  updateEmail(email: string, user_id: string) {
+    var token: string | null = this._localService.getItem("user_token");
+    if(token != null) {
+      this._loadDataService.updateEmail(email, user_id, token)
+        .subscribe(() => {
+          if(token != null) {
+            this.requestNewData(token);
+          }
+        });
+    }
+  }
+
+  updateRole(role: number, user_id: string) {
+    var token: string | null = this._localService.getItem("user_token");
+    if(token != null) {
+      this._loadDataService.updateRole(role, user_id, token)
+        .subscribe(() => {
+          if(token != null) {
+            this.requestNewData(token);
+          }
+        });
+    }
+  }
+
+  updatePassword(password: string, user_id: string) {
+    var token: string | null = this._localService.getItem("user_token");
+    if(token != null) {
+      this._loadDataService.updatePasswordViaToken(password, user_id, token)
+        .subscribe(() => {
+          if(token != null) {
+            this.requestNewData(token);
+          }
+        });
+    }
+  }
+
+  ////
 
   mergeTimelines() {
     var filled: boolean = true;
@@ -218,7 +391,7 @@ export class UserService {
 
   clearData() {
     var blank_user: User = {
-      userId: '',
+      user_id: '',
       role: 0,
       firstName: '',
       lastName: '',
@@ -228,8 +401,15 @@ export class UserService {
     this.setCourses([]);
     this.setRooms([]);
     this.setBookings("{}");
+    this.setUsers([]);
     this._temp_time = [];
     this.mergeTimelines();
+  }
+
+  requestNewData(token: string) {
+    var user: User = this._userData.value;
+    this.clearData();
+    this.requestBaseData(user, token, this._date.value);
   }
 
   requestTimeline(room_id: string, date: string, token: string) {
@@ -260,14 +440,14 @@ export class UserService {
     });
   }
 
-  requestRooms(user_token: string): void {
+  requestRooms(user_token: string, date: Date): void {
     this._loadDataService.getRooms()
     .subscribe({
       next: (value) => {
         if(value.body != null) {
             this._statusService.setLoadingStatus("Done");
             this.setRooms(JSON.parse(JSON.stringify(value.body)));
-            this.setUpTimelineRequest(new Date().toISOString().split('T')[0], user_token);
+            this.setUpTimelineRequest(new Date(date).toISOString().split('T')[0], user_token);
 
         }
       }
@@ -275,7 +455,6 @@ export class UserService {
   }
 
   requestUserBookings(user_id: string, user_token: string) {
-    console.log(this._userData.value.role);
     this._loadDataService.getUserBookings(user_id, user_token)
       .subscribe({
         next: (value) => {
@@ -302,23 +481,48 @@ export class UserService {
       })
   }
 
+  requestUsers(user_token: string) {
+    this._loadDataService.getUsers(user_token)
+      .subscribe({
+        next: (value) => {
+          if(value.body != null) {
+            this.setUsers(JSON.parse(JSON.stringify(value.body)));
+          }
+        }
+      })
+  }
 
-  requestBaseData(user: User, user_token: string): void {
+  requestInscriptions(user_token: string) {
+    this._loadDataService.getInscriptions(user_token)
+      .subscribe({
+        next: (value) => {
+          if(value.body != null) {
+            this.setInscriptions(JSON.parse(JSON.stringify(value.body)));
+          }
+        }
+      })
+  }
+
+
+  requestBaseData(user: User, user_token: string, date: Date): void {
     this._statusService.setLoadingStatus(`Welcome, ${user.firstName}!`);
     this.setUserData(user);
     this._statusService.setLoadingStatus("Requesting course data ...");
     this.requestCourses();
     this._statusService.setLoadingStatus("Requesting room data ...");
-    this.requestRooms(user_token);
+    this.requestRooms(user_token, date);
     this._statusService.setLoadingStatus("Requesting booking data ...");
-    this.startBookingRequest(user, user_token);
+    this.startAssistantRequest(user, user_token);
   }
 
-  startBookingRequest(user: User, user_token: string) {
+  startAssistantRequest(user: User, user_token: string) {
     if (user.role == 0) {
-      this.requestUserBookings(user.userId, user_token);
+      console.log(user);
+      this.requestUserBookings(user.user_id, user_token);
     } else {
+      this.requestUsers(user_token);
       this.requestBookings(user_token);
+      this.requestInscriptions(user_token);
     }
   }
 
@@ -346,7 +550,8 @@ export class UserService {
           next: (value) => {
             if(value.ok && value.body != null) {
               this._statusService.setLoadingStatus("Done. Loading data ...");
-              this.requestBaseData(JSON.parse(JSON.stringify(value.body)), user_token);
+              console.log(value.body);
+              this.requestBaseData(JSON.parse(JSON.stringify(value.body)), user_token, new Date());
             } else {
               this._statusService.setLoadingStatus("Invalid token \n Redirecting to login");
               this._localService.deleteItem("user_token");

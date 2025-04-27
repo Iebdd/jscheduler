@@ -116,5 +116,82 @@ public class UpdateController {
     }
     return permissionService.refreshToken(user_id, token);
   }
+
+  /**
+   * Refreshes the expiry date of a token
+   * 
+   * @param user_id The id of the user the token is associated with
+   * @param header       A Bearer Token containing an authentication token (Authorization: Bearer {token}) Token contains {@value PermissionService#TOKEN_LENGTH} upper or lower case letters, or numbers <p>
+   *                     Requires Admin level permissions
+   * 
+   * @return  True if the change was made, false if not
+   */
+  @PatchMapping(path="/firstName")
+  public ResponseEntity<Boolean> updateFirstName(@RequestParam UUID user_id, @RequestParam String first_name, @RequestHeader("Authorization") String header) {
+    String token = permissionService.validAuthHeader(header);
+    if(token.length() == 0) {
+      return new ResponseEntity<>(false, HttpStatus.NO_CONTENT);
+    }
+    userService.updateFirstName(user_id, first_name);
+    return ResponseEntity.ok(true);
+  }
+
+    /**
+   * Refreshes the expiry date of a token
+   * 
+   * @param user_id The id of the user the token is associated with
+   * @param header       A Bearer Token containing an authentication token (Authorization: Bearer {token}) Token contains {@value PermissionService#TOKEN_LENGTH} upper or lower case letters, or numbers <p>
+   *                     Requires Admin level permissions
+   * 
+   * @return  True if the change was made, false if not
+   */
+  @PatchMapping(path="/lastName")
+  public ResponseEntity<Boolean> updateLastName(@RequestParam UUID user_id, @RequestParam String last_name, @RequestHeader("Authorization") String header) {
+    String token = permissionService.validAuthHeader(header);
+    if(token.length() == 0) {
+      return new ResponseEntity<>(false, HttpStatus.NO_CONTENT);
+    }
+    userService.updateLastName(user_id, last_name);
+
+    return ResponseEntity.ok(true);
+  }
+
+    /**
+   * Refreshes the expiry date of a token
+   * 
+   * @param user_id The id of the user the token is associated with
+   * @param header       A Bearer Token containing an authentication token (Authorization: Bearer {token}) Token contains {@value PermissionService#TOKEN_LENGTH} upper or lower case letters, or numbers <p>
+   *                     Requires Admin level permissions
+   * 
+   * @return  True if the change was made, false if not
+   */
+  @PatchMapping(path="/email")
+  public ResponseEntity<Boolean> updateEmail(@RequestParam UUID user_id, @RequestParam String email, @RequestHeader("Authorization") String header) {
+    String token = permissionService.validAuthHeader(header);
+    if(token.length() == 0) {
+      return new ResponseEntity<>(false, HttpStatus.NO_CONTENT);
+    }
+    userService.updateEmail(user_id, email);
+    return ResponseEntity.ok(true);
+  }
+
+    /**
+   * Refreshes the expiry date of a token
+   * 
+   * @param user_id The id of the user the token is associated with
+   * @param header       A Bearer Token containing an authentication token (Authorization: Bearer {token}) Token contains {@value PermissionService#TOKEN_LENGTH} upper or lower case letters, or numbers <p>
+   *                     Requires Admin level permissions
+   * 
+   * @return  True if the change was made, false if not
+   */
+  @PatchMapping(path="/role")
+  public ResponseEntity<Boolean> updateRole(@RequestParam UUID user_id, @RequestParam int role, @RequestHeader("Authorization") String header) {
+    String token = permissionService.validAuthHeader(header);
+    if(token.length() == 0) {
+      return new ResponseEntity<>(false, HttpStatus.NO_CONTENT);
+    }
+    userService.updateRole(user_id, role);
+    return ResponseEntity.ok(true);
+  }
   
 }

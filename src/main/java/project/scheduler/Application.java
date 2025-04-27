@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import project.scheduler.Services.MockDataService;
 
+
 @SpringBootApplication
 public class Application {
 
@@ -19,7 +20,8 @@ public class Application {
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 		MockDataService mockDataService = new MockDataService();
-		mockDataService.init();
+		mockDataService.init();	
+		//Mock Data Service to add data on startup commented out but left present just in case
 	}
 
 }

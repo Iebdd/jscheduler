@@ -87,4 +87,20 @@ public class UserService {
     public Iterable<User> getAllUsers() {
         return userRepository.findAll();
     }
+
+    public void updateFirstName(UUID user_id, String firstName) {
+        userRepository.updateFirstName(firstName, user_id);
+    }
+
+    public void updateLastName(UUID user_id, String lastName) {
+        userRepository.updateLastName(lastName, user_id);
+    }
+
+    public void updateEmail(UUID user_id, String email) {
+        userRepository.updateEmail(email, user_id);
+    }
+
+    public void updateRole(UUID user_id, int role) {
+        userRepository.updateRole(role, user_id);
+    }
 }

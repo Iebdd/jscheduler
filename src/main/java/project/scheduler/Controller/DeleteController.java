@@ -43,16 +43,16 @@ public class DeleteController {
    * @return  A String containing feedback on the operation (Refer to response codes for response handling)
    */
   @PostMapping(path="/inscription")
-  public ResponseEntity<String> removeStudent(@RequestParam UUID user_id, @RequestParam UUID course_id, @RequestHeader("Authorization") String header) {
+  public ResponseEntity<Boolean> removeStudent(@RequestParam UUID user_id, @RequestParam UUID course_id, @RequestHeader("Authorization") String header) {
     String token = permissionService.validAuthHeader(header);
     if(token.length() == 0) {
-      return new ResponseEntity<>("Invalid Authorization Header", HttpStatus.UNAUTHORIZED);
+      return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
     }
     if(!permissionService.validRole(token, user_id, Permissions.Assistant)) {
-      return new ResponseEntity<>("Insufficient permissions", HttpStatus.UNAUTHORIZED);
+      return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
     }
     if(!inscriptionService.ifExists(user_id, course_id)) {
-      return new ResponseEntity<>(String.format("User: %s is not inscribed in Course: %s", user_id, course_id), HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
     }
     return inscriptionService.remove(user_id, course_id);
   }

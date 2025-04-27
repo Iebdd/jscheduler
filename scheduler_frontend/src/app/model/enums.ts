@@ -12,9 +12,22 @@ export enum Feedback {
 
 export enum InfoStates {
     Default,
+    Menu,
+    NewCourse,
+    NewRoom,
     CourseInfo,
     NewCourseRoom,    
     NewCourseStart,
     NewCourseEnd,
-    NewCourseCourse
+    NewCourseCourse,
+    EnrollStudent,
+    EnrollCourse,
+    UnenrollStudent,
+    Management,
+    ManagementDetail,
+    ManagementFirstName,
+    ManagementLastName,
+    ManagementEmail,
+    ManagementRole,
+    ManagementPassword
 }

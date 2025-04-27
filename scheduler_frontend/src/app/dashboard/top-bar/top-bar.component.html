@@ -2,7 +2,12 @@
     <div class="logo">
         Scheduler
     </div>
-    <div class="logout">
+    @if(this._active_user.role > 1) {
+        <div class="but management">
+            <button (click)="setManagement()">User Management</button>
+        </div>
+    }
+    <div class="but">
         <button (click)="logOut()">Log Out</button>
     </div>
 </div>

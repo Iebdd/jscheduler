@@ -40,4 +40,12 @@ public class Inscription {
     return inscriptions_id;
   }
 
+  @Override
+  public String toString() {      //I realised too late that having the user object within a repository does not just save the id as it shwos in the database but the entire object
+    StringBuilder new_string = new StringBuilder();
+    new_string.append(String.format("{\"user_id\": \"%s\", \"course_id\": \"%s\"}", 
+                                            this.inscriptions_id.getUserId().getUserId(), this.inscriptions_id.getCourseId().getId()));
+    return new_string.toString();
+  }
+
 }

@@ -1,16 +1,20 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { UserService } from '../../Services/user.service';
-import { Booking, Course, Info, Room, Segment, User } from '../../model/interfaces';
+import { Booking, Course, Info, Inscription, Room, Segment, User } from '../../model/interfaces';
 import { InfoStates } from '../../model/enums';
-import { LoadDataService } from '../../Services/load-data.service';
 import { CourseNamePipe } from '../../Pipes/course-name.pipe';
 import { RoomNamePipe } from '../../Pipes/room-name.pipe';
 import { DatePipe } from '@angular/common';
 import { LocalService } from '../../Services/local.service';
+import { StatusService } from '../../Services/status.service';
+import { FormsModule } from '@angular/forms';
 
+/**
+ * Provides the info bar, the right hand side of the dashboard
+ */
 @Component({
   selector: 'app-info-bar',
-  imports: [CourseNamePipe, RoomNamePipe, DatePipe],
+  imports: [CourseNamePipe, RoomNamePipe, DatePipe, FormsModule],
   templateUrl: './info-bar.component.html',
   styleUrl: './info-bar.component.scss'
 })
@@ -18,6 +22,7 @@ export class InfoBarComponent implements OnInit {
 
   private _userService: UserService = inject(UserService);
   private _localService: LocalService = inject(LocalService);
+  private _statusService: StatusService = inject(StatusService);
   protected States = InfoStates;
   protected delete_pressed: boolean = false;
 
@@ -32,6 +37,22 @@ export class InfoBarComponent implements OnInit {
     start: '',
     end: '',
     index: -1
+  }
+
+  protected _user_detail = {
+    user_id: '',
+    role: -1,
+    firstName: '',
+    lastName: '',
+    email: ''
+  }
+  protected _input_field: string = '';
+  protected _active_user: User = {
+    user_id: '',
+    role: -1,
+    firstName: '',
+    lastName: '',
+    email: ''
   }
   protected _permission: number = 0;
 
@@ -48,9 +69,126 @@ export class InfoBarComponent implements OnInit {
   protected _end_timeline: Segment[] = [];
   protected _hour_markers: string[] = [];
   protected _info_state: InfoStates = InfoStates.Default;
+  protected _dashboard_status: string = '';
+  protected _users: User[] = [];
+  protected _inscriptions: Inscription[] = [];
 
-  addItem() {
+  addBooking() {
     this._info_state = InfoStates.NewCourseRoom;
+  }
+
+  addCourse() {
+    for(var course of this._courses) {
+      if(this._input_field == course.courseName) {
+        this._statusService.setDashboardStatus("A course with that name already exists.");
+        return;
+      }
+    }
+    this._userService.addCourse(this._input_field);
+    this.clearInput(InfoStates.Default);
+  }
+
+  addRoom() {
+    for(var room of this._rooms) {
+      if(this._input_field == room.roomName) {
+        this._statusService.setDashboardStatus("A room with that name already exists.")
+        return;
+      }
+    }
+    this._userService.addRoom(this._input_field);
+    this.clearInput(InfoStates.Default);
+  }
+
+  newMenu() {
+    this._statusService.setDashboardStatus('');
+    this._info_state = InfoStates.Menu;
+  }
+
+  userDetail(user: User) {
+    this._user_detail = user;
+    this._info_state = InfoStates.ManagementDetail;
+  }
+
+  updateFirstName() {
+    if(this._input_field != '') {
+      this._userService.updateFirstName(this._input_field, this._user_detail.user_id);
+      this._input_field = '';
+      this._info_state = InfoStates.Management;
+    } else {
+      this._statusService.setDashboardStatus("Input cannot be empty.")
+    }
+  }
+
+  updateLastName() {
+    if(this._input_field != '') {
+      this._userService.updateLastName(this._input_field, this._user_detail.user_id);
+      this._input_field = '';
+      this._info_state = InfoStates.Management;
+    } else {
+      this._statusService.setDashboardStatus("Input cannot be empty.")
+    }
+  }
+
+  updateEmail() {
+    if(this._input_field != '') {
+      this._userService.updateEmail(this._input_field, this._user_detail.user_id);
+      this._input_field = '';
+      this._info_state = InfoStates.Management;
+    } else {
+      this._statusService.setDashboardStatus("Input cannot be empty.")
+    }
+  }
+
+  updateRole(role: number) {
+    this._userService.updateRole(role, this._user_detail.user_id);
+    this._info_state = InfoStates.Management;
+  }
+
+  updatePassword() {
+    if(this._input_field != '') {
+      this._userService.updatePassword(this._input_field, this._user_detail.user_id);
+      this._input_field = '';
+      this._info_state = InfoStates.Management;
+    } else {
+      this._statusService.setDashboardStatus("Input cannot be empty.")
+    }
+  }
+
+  validEmail(email: string): boolean {
+    if(email.match(/(?!(^[.-].*|[^@]*\.@|.*\.{2,}.*)|^.{254}.)([a-zA-Z0-9!#$%&'*+\/=?^_`{|}~.-]+@)(?!-.*|.*-\.)([a-zA-Z0-9-]{1,63}\.)+[a-zA-Z]{2,15}/g)) {
+      return true;
+    } else {                   //  Email regex pattern taken from this StackOverflow answer: 
+      return false;            //  https://stackoverflow.com/questions/27000681/how-to-verify-form-input-using-html5-input-verification/27000682#27000682
+    }
+  }
+
+  clearDetail() {
+    this._user_detail = {
+      user_id: '',
+      role: -1,
+      firstName: '',
+      lastName: '',
+      email: ''
+    }
+    this._info_state = InfoStates.Management;
+  }
+
+  clearInput(next_state: InfoStates) {
+    this._info_state =  next_state;
+    this._input_field = '';
+    this._info_booking = {
+      bookings_id: '',
+      course_id: '',
+      room_id: '',
+      start: new Date(),
+      end: new Date(),
+      status: ''
+    };
+    this._statusService.setDashboardStatus('');
+  }
+
+  confirmPreference(booking_id: string) {
+    this._userService.updateBooking('Set', booking_id);
   }
 
   setRoom(room_no: number) {
@@ -69,7 +207,7 @@ export class InfoBarComponent implements OnInit {
     this._info_state = InfoStates.NewCourseCourse;
   }
 
-  setCourse(course_no: number) {
+  setBooking(course_no: number) {
     var start_time = this._date.toISOString().split('T')[0] + "T" + this._info.start;
     var end_time = this._date.toISOString().split('T')[0] + "T" + this._info.end;
     this._userService.addBooking(this._courses[course_no].id, this._rooms[this._info.room].id, start_time, end_time);
@@ -101,8 +239,41 @@ export class InfoBarComponent implements OnInit {
 
   }
 
-  enrollStudent() {
-    console.log(this._permission);
+  setEnrolmentCourse(course_id: string): void {
+    this._info_booking.course_id = course_id;
+    if(this._active_user.role > 0) {
+      this._info_state=InfoStates.EnrollStudent;
+    } else {
+      this.enrollStudent(this._active_user.user_id);
+    }
+  }
+
+  enrollStudent(user_id: string) {
+    if(user_id == '') {
+      if(this._active_user.role < 1) {
+        this._userService.addInscription(this._active_user.user_id, this._info_booking.course_id);
+        this._info_state = InfoStates.Default;
+    } else {
+        this._info_state = InfoStates.EnrollStudent;
+      }
+    } else {
+      this._userService.addInscription(user_id, this._info_booking.course_id);
+      this._info_state = InfoStates.Default;
+    }
+  }
+
+  unenrollStudent(user_id: string) {
+    if(user_id == '') {
+      if(this._active_user.role < 1) {
+        this._userService.removeInscription(this._active_user.user_id, this._info_booking.course_id);
+        this._info_state = InfoStates.Default;
+      } else {
+        this._info_state = InfoStates.UnenrollStudent;
+      }
+    } else {
+      this._userService.removeInscription(user_id, this._info_booking.course_id);
+      this._info_state = InfoStates.Default;
+    }
   }
 
   assignBooking(): void {
@@ -175,6 +346,26 @@ export class InfoBarComponent implements OnInit {
       .subscribe(permission => this._permission = permission)
   }
 
+  getDashboardInfo(): void {
+    this._statusService.getDashboardStatus()
+      .subscribe(status => this._dashboard_status = status);
+  }
+
+  getUsers(): void {
+    this._userService.getUsers()
+      .subscribe(users => this._users = users);
+  }
+
+  getActiveUser(): void {
+    this._userService.getUserData()
+      .subscribe(userData => this._active_user = userData);
+  }
+
+  getInscriptions(): void {
+    this._userService.getInscriptions()
+      .subscribe(inscriptions => this._inscriptions = inscriptions);
+  }
+
   ngOnInit(): void {
     this.getRooms();
     this.getCourses();
@@ -185,5 +376,9 @@ export class InfoBarComponent implements OnInit {
     this.getDate();
     this.getBookings();
     this.getPermissions();
+    this.getUsers();
+    this.getActiveUser();
+    this.getInscriptions();
+    this.getDashboardInfo();
   }
 }

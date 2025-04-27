@@ -7,6 +7,9 @@ import { LoadDataService } from '../Services/load-data.service';
 import { UserService } from '../Services/user.service';
 import { LocalService } from '../Services/local.service';
 
+/**
+ * Provides the login view
+ */
 @Component({
   selector: 'app-login',
   imports: [FormsModule],

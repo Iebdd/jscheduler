@@ -41,7 +41,7 @@ public class PublicUser {
     public String getEmail() {
         return email;
     }
-    public UUID getUserId() {
+    public UUID getUser_id() {
         return user_id;
     }
 }

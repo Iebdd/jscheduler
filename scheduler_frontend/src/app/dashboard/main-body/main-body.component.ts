@@ -9,6 +9,9 @@ import { StatusService } from '../../Services/status.service';
 import { CourseNamePipe } from '../../Pipes/course-name.pipe';
 import { InfoStates } from '../../model/enums';
 
+/**
+ * Provides the main body, the left hand side of the dashboard
+ */
 @Component({
   selector: 'app-main-body',
   imports: [DatePipe, CommonModule, CourseNamePipe],
@@ -36,7 +39,7 @@ export class MainBodyComponent implements OnInit {
 protected _hour_markers: string[] = [];
 
   protected _active_user: User = {
-    userId: '',
+    user_id: '',
     role: 0,
     firstName: '',
     lastName: '',
@@ -65,7 +68,6 @@ protected _hour_markers: string[] = [];
     this._timelines = [];
     var next_date: Date = new Date(this._date.setDate(this._date.getDate() - 1));
     this.getNewTimeline(next_date);
-    console.log(this._timelines);
   }
 
   nextDay() {
@@ -81,8 +83,10 @@ protected _hour_markers: string[] = [];
   }
 
   newCourse(room: number, index: number) {
-    this._userService.setInfo('', room, '', '', false, index);
-    this._userService.setInfoState(InfoStates.NewCourseEnd);
+    if(this._active_user.role != 0) {
+      this._userService.setInfo('', room, '', '', false, index);
+      this._userService.setInfoState(InfoStates.NewCourseEnd);
+    }
   }
 
   bookingInfo(booking_id: string, room: number) {
